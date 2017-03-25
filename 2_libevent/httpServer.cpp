@@ -1,5 +1,6 @@
 #include "httpServer.h"
 #include <thread>
+#include <iostream>
 
 int init_win_socket()
 {
@@ -13,6 +14,7 @@ int init_win_socket()
 
 void ThreadHandler(struct evhttp_request* req, void* arg)
 {
+	std::cout << "thread id" << std::this_thread::get_id() << std::endl;
     //获取请求的URI
     const char* uri = (char*)evhttp_request_get_uri(req);
 	userData_t *data = (userData_t*)arg;
