@@ -1,96 +1,44 @@
 #include <stdio.h>
 #include <string.h>
-#include <event.h>
+#include "httpServer.h"
 
 
-int init_win_socket()
+class logicTest :public logicBase
 {
-	WSADATA wsaData;
-	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
+public:
+	logicTest(char *logicInfo) :logicBase::logicBase(logicInfo) {}
+	void logic_run(struct evhttp_request * req, void * userData)
 	{
-		return -1;
+		//创建要使用的buffer对象
+		evbuffer* buf = evbuffer_new();
+		if (!buf) {
+			return;
+		}
+		//获取请求的URI
+		const char* uri = (char*)evhttp_request_get_uri(req);
+		//添加对应的HTTP代码
+		evbuffer_add_printf(buf, "<html>");
+		evbuffer_add_printf(buf, "<head><title>MyHttpServer</title></head>");
+		evbuffer_add_printf(buf, "<body>");
+		//根据URI显示不同的页面
+		if (strcmp(uri, "/test") == 0) {
+			evbuffer_add_printf(buf, "<p>I love C++</p>");
+		}
+		evbuffer_add_printf(buf, "</body>");
+		evbuffer_add_printf(buf, "</html>");
+		//回复给客户端
+		evhttp_send_reply(req, HTTP_OK, "OK", buf);
+		evbuffer_free(buf);
 	}
-	return 0;
-}
+};
 
-struct event_base *base;
-
-// 读事件
-void onRead(int clifd, short ievent, void *arg)
+int main(void)
 {
-	int ilen;
-	char buf[1500];
+	logicTest test("test");
 
-	ilen = recv(clifd, buf, 1500, 0);
-	printf("ilen = %d\n", ilen);
-
-	if (ilen <= 0)
-	{
-		printf("Client close\n");
-
-		struct event *pread = (struct event*)arg;
-		event_del(pread);
-		delete pread;
-
-		//close(clifd);
-		return;
-	}
-
-	buf[ilen] = '\0';
-	printf("Accpet: %s\n", buf);
-}
-
-// 连接事件
-void onAccept(int svrfd, short ievent, void *arg)
-{
-	int clifd;
-	struct sockaddr_in cliaddr;
-
-	socklen_t sinsize = sizeof(cliaddr);
-	clifd = accept(svrfd, (struct sockaddr*)&cliaddr, &sinsize);
-
-	struct event *pread = new event;
-	event_set(pread, clifd, EV_READ | EV_PERSIST, onRead, pread);  // 注册读(写)事件
-	event_base_set(base, pread);
-	event_add(pread, NULL);
-}
-
-
-int main()
-{
-#ifdef WIN32
-	init_win_socket();
-#endif
-
-	int svrfd;
-	struct sockaddr_in svraddr;
-
-	memset(&svrfd, 0, sizeof(svraddr));
-	svraddr.sin_family = AF_INET;
-	svraddr.sin_port = htons(3354);
-	svraddr.sin_addr.s_addr = inet_addr("0.0.0.0");
-
-	svrfd = socket(AF_INET, SOCK_STREAM, 0);
-	bind(svrfd, (struct sockaddr*)&svraddr, sizeof(svraddr));
-
-	listen(svrfd, 10);
-
-	// 初始化事件库
-	base = event_base_new();
-
-	// 初始化一个连接事件,EV_PRESIST指定重复执行该事件
-	struct event evlisten;
-	event_set(&evlisten, svrfd, EV_READ | EV_PERSIST, onAccept, NULL);
-
-	// 设置为base事件
-	event_base_set(base, &evlisten);
-	// 添加事件
-	event_add(&evlisten, NULL);
-	// 事件循环
-	event_base_dispatch(base);
-
-	WSACleanup();
+	httpServer server("0.0.0.0", 8000, NULL);
+	server.addInterfaceLogic(&test);
+	server.startServer();
 
 	return 0;
-
 }
