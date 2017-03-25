@@ -1,4 +1,5 @@
 #include "httpServer.h"
+#include <thread>
 
 int init_win_socket()
 {
@@ -10,7 +11,7 @@ int init_win_socket()
 	return 0;
 }
 
-void HttpServerHandler(struct evhttp_request* req, void* arg)
+void ThreadHandler(struct evhttp_request* req, void* arg)
 {
     //获取请求的URI
     const char* uri = (char*)evhttp_request_get_uri(req);
@@ -36,6 +37,12 @@ void HttpServerHandler(struct evhttp_request* req, void* arg)
 
 	//不是接口访问，又不是正常业务，则发送一个404错误
 	data->self->send404Error(req, data->userData);
+}
+
+void HttpServerHandler(struct evhttp_request* req, void* arg)
+{
+	std::thread th(ThreadHandler, req, arg);
+	th.detach();
 }
 
 httpServer::httpServer(char * ip, int port, void * userData_)
