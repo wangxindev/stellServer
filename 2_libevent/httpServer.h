@@ -45,6 +45,8 @@ public:
 	inline std::list <logicBase*> getInterfaceLogicList() { return _interfaceLogicList; }
 	inline void addLogic(logicBase * logic) { if (_logic == NULL) _logic = logic; }
 	inline logicBase* getLogic() { return _logic; }
+
+	void getHttpData(struct evhttp_request* req, void* arg);
 	bool startServer();
 
 	void send404Error(struct evhttp_request* req, void* arg);

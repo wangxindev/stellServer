@@ -1,4 +1,4 @@
-#include "httpServer.h"
+ï»¿#include "httpServer.h"
 #include <thread>
 #include <iostream>
 
@@ -15,9 +15,10 @@ int init_win_socket()
 void ThreadHandler(struct evhttp_request* req, void* arg)
 {
 	std::cout << "thread id" << std::this_thread::get_id() << std::endl;
-    //»ñÈ¡ÇëÇóµÄURI
-    const char* uri = (char*)evhttp_request_get_uri(req);
+	//è·å–è¯·æ±‚çš„URI
+	const char* uri = (char*)evhttp_request_get_uri(req);
 	userData_t *data = (userData_t*)arg;
+	data->self->getHttpData(req, data->userData);
 
 	for (auto logic : data->self->getInterfaceLogicList())
 	{
@@ -30,21 +31,25 @@ void ThreadHandler(struct evhttp_request* req, void* arg)
 		}
 	}
 
-	//Èç¹ûÇëÇóÂ·¾¶²»ÊÇ½Ó¿ÚÔòÖ´ĞĞÕı³£ÒµÎñ
+	//å¦‚æœè¯·æ±‚è·¯å¾„ä¸æ˜¯æ¥å£åˆ™æ‰§è¡Œæ­£å¸¸ä¸šåŠ¡
 	if (data->self->getLogic() != NULL)
 	{
 		data->self->getLogic()->logic_run(req, data->userData);
 		return;
 	}
 
-	//²»ÊÇ½Ó¿Ú·ÃÎÊ£¬ÓÖ²»ÊÇÕı³£ÒµÎñ£¬Ôò·¢ËÍÒ»¸ö404´íÎó
+	//ä¸æ˜¯æ¥å£è®¿é—®ï¼Œåˆä¸æ˜¯æ­£å¸¸ä¸šåŠ¡ï¼Œåˆ™å‘é€ä¸€ä¸ª404é”™è¯¯
 	data->self->send404Error(req, data->userData);
 }
 
 void HttpServerHandler(struct evhttp_request* req, void* arg)
 {
+#if 1
+	ThreadHandler(req, arg);
+#else
 	std::thread th(ThreadHandler, req, arg);
 	th.detach();
+#endif
 }
 
 httpServer::httpServer(char * ip, int port, void * userData_)
@@ -67,48 +72,86 @@ httpServer::~httpServer()
 #endif
 }
 
+void httpServer::getHttpData(struct evhttp_request* req, void* arg)
+{
+	std::string data;
+	//è·å–å®¢æˆ·ç«¯è¯·æ±‚çš„URI(ä½¿ç”¨evhttp_request_uriæˆ–ç›´æ¥req->uri)
+	const char *uri = evhttp_request_get_uri(req);
+	data.append("uri=");
+	data.append(uri);
+	data.append("\n");
+	//decoded uri
+	char *decoded_uri = evhttp_decode_uri(uri);
+	data.append("decoded_uri=");
+	data.append(decoded_uri);
+	data.append("\n");
+	//è§£æURIçš„å‚æ•°(å³GETæ–¹æ³•çš„å‚æ•°)
+	struct evkeyvalq *params = evhttp_request_get_input_headers(req);
+	evhttp_parse_query(decoded_uri, params);
+	data += "q=";
+	if (const char * str = evhttp_find_header(params, "q"))
+		data.append(str);
+	data += "\n";
+	data += "s=";
+	if (const char * str = evhttp_find_header(params, "s"))
+		data.append(str);
+	data += "\n";
+	free(decoded_uri);
+	//è·å–POSTæ–¹æ³•çš„æ•°æ®
+	evbuffer * post_buff = evhttp_request_get_input_buffer(req);
+	char data_out[4096] = { 0 };
+	while (evbuffer_copyout(post_buff, data_out, 4096) > 0)
+	{
+		data += data_out;
+		memset(data_out, 0, 4096);
+	}
+
+	std::cout << data.c_str() << std::endl;
+}
+
 bool httpServer::startServer()
 {
 
-	//´´½¨event_baseºÍevhttp
-    event_base* base = event_base_new();
-    evhttp* http_server = evhttp_new(base);
-    if (!http_server) {
-        return false;
-    }
-    //°ó¶¨µ½Ö¸¶¨µØÖ·ÉÏ
-    int ret = evhttp_bind_socket(http_server, _info.ip, _info.port & 0xFFFF);
-    if (ret != 0) {
-        return false;
-    }
-    //ÉèÖÃÊÂ¼ş´¦Àíº¯Êı
-    evhttp_set_gencb(http_server, HttpServerHandler, &_info.userData);
+	//åˆ›å»ºevent_baseå’Œevhttp
+	event_base* base = event_base_new();
+	evhttp* http_server = evhttp_new(base);
+	if (!http_server) {
+		return false;
+	}
+	//ç»‘å®šåˆ°æŒ‡å®šåœ°å€ä¸Š
+	int ret = evhttp_bind_socket(http_server, _info.ip, _info.port & 0xFFFF);
+	if (ret != 0) {
+		return false;
+	}
+	//è®¾ç½®äº‹ä»¶å¤„ç†å‡½æ•°
+	evhttp_set_gencb(http_server, HttpServerHandler, &_info.userData);
 
-    //Æô¶¯ÊÂ¼şÑ­»·£¬µ±ÓĞhttpÇëÇóµÄÊ±ºò»áµ÷ÓÃÖ¸¶¨µÄ»Øµ÷
-    event_base_dispatch(base);
-    evhttp_free(http_server);
-    return true;
+	//å¯åŠ¨äº‹ä»¶å¾ªç¯ï¼Œå½“æœ‰httpè¯·æ±‚çš„æ—¶å€™ä¼šè°ƒç”¨æŒ‡å®šçš„å›è°ƒ
+	event_base_dispatch(base);
+	evhttp_free(http_server);
+	return true;
 }
 
 void httpServer::send404Error(evhttp_request * req, void * arg)
 {
-		//´´½¨ÒªÊ¹ÓÃµÄbuffer¶ÔÏó
-		evbuffer* buf = evbuffer_new();
-		if (!buf) {
-			return;
-		}
-		//»ñÈ¡ÇëÇóµÄURI
-		const char* uri = (char*)evhttp_request_get_uri(req);
-		//Ìí¼Ó¶ÔÓ¦µÄHTTP´úÂë
-		evbuffer_add_printf(buf, "<html>");
-		evbuffer_add_printf(buf, "<head><title>HttpServer</title></head>");
-		evbuffer_add_printf(buf, "<body>");
-		//¸ù¾İURIÏÔÊ¾²»Í¬µÄÒ³Ãæ
-		evbuffer_add_printf(buf, "<p>404</p>");
-		evbuffer_add_printf(buf, "</body>");
-		evbuffer_add_printf(buf, "</html>");
-		//»Ø¸´¸ø¿Í»§¶Ë
-		evhttp_send_reply(req, HTTP_NOTFOUND, "notfound", buf);
-		evbuffer_free(buf);
+	//åˆ›å»ºè¦ä½¿ç”¨çš„bufferå¯¹è±¡
+	evbuffer* buf = evbuffer_new();
+	if (!buf) {
+		return;
+	}
+	//è·å–è¯·æ±‚çš„URI
+	const char* uri = (char*)evhttp_request_get_uri(req);
+	//æ·»åŠ å¯¹åº”çš„HTTPä»£ç 
+	evbuffer_add_printf(buf, "<html>");
+	evbuffer_add_printf(buf, "<head><title>HttpServer</title></head>");
+	evbuffer_add_printf(buf, "<body>");
+	//æ ¹æ®URIæ˜¾ç¤ºä¸åŒçš„é¡µé¢
+	evbuffer_add_printf(buf, "<p>404</p>");
+	evbuffer_add_printf(buf, "</body>");
+	evbuffer_add_printf(buf, "</html>");
+	//å›å¤ç»™å®¢æˆ·ç«¯
+	evhttp_send_reply(req, HTTP_NOTFOUND, "notfound", buf);
+	evbuffer_free(buf);
+	std::cout << "send stop\n";
 }
 

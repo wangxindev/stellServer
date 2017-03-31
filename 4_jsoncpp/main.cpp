@@ -1,10 +1,3 @@
-
-#ifdef DEBUG
-#pragma comment(lib, "json_mtd.lib")
-#else
-#pragma comment(lib, "json_mt.lib")
-#endif
- 
 #include <fstream>
 #include <cassert>
 #include "json/json.h"

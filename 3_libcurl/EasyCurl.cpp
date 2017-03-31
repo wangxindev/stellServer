@@ -106,6 +106,7 @@ int EasyCurl::http_post(const string & strUrl, const string & strParam, string &
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, OnWriteData);
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&strResponse);
 	curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
+
 	if(NULL == pCaPath)
 	{
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, false);

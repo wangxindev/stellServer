@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "httpServer.h"
+#include <iostream>
 
 
 class logicTest :public logicBase
@@ -29,6 +30,7 @@ public:
 		//回复给客户端
 		evhttp_send_reply(req, HTTP_OK, "OK", buf);
 		evbuffer_free(buf);
+		std::cout << "send stop\n";
 	}
 };
 
