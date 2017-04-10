@@ -6,13 +6,50 @@
 #include <event2/buffer.h>
 #include <event2/http.h>
 
-//业务逻辑父类，业务类必须继承并复写logic_run
+/**
+ @class	logicBase
+
+ @brief	业务逻辑父类，业务类必须继承并复写logic_run.
+
+ @author	wangxin
+ @date	2017/3/31
+ */
+
 class logicBase {
 public:
 	logicBase(char * info) { _info = info; }
 	~logicBase() {}
 	virtual void logic_run(struct evhttp_request *, void *) {}
 	const char *getLogicInfo() { return _info; }
+
+	std::string getHttpHeadParam(char * param, struct evhttp_request * req)
+	{
+		const char *uri = evhttp_request_get_uri(req);
+		//decoded uri
+		char *decoded_uri = evhttp_decode_uri(uri);
+		//解析URI的参数(即GET方法的参数)
+		struct evkeyvalq *params = evhttp_request_get_input_headers(req);
+		evhttp_parse_query(decoded_uri, params);
+		if (const char * str = evhttp_find_header(params, param))
+		{ 
+			return std::string(str);
+		}
+		return std::string();
+	}
+
+	std::string getPostHttpBody(struct evhttp_request * req)
+	{
+		//获取POST方法的数据
+		std::string data;
+		evbuffer * post_buff = evhttp_request_get_input_buffer(req);
+		char data_out[4096] = { 0 };
+		while (evbuffer_copyout(post_buff, data_out, 4096) > 0)
+		{
+			data += data_out;
+			memset(data_out, 0, 4096);
+		}
+		return data;
+	}
 protected:
 	char *_info;//业务信息，可以理解为获得的url，业务类以此为分割点
 };
@@ -25,20 +62,49 @@ typedef struct suserData
 	void * userData;
 }userData_t;
 
-//http服务器实现.这里不包含ip验证
+/**
+ @class	httpServer
+
+ @brief	http服务器实现.这里不包含ip验证.
+
+ @author	wangxin
+ @date	2017/3/31
+ */
+
 class httpServer
 {
 public:
 private:
 	typedef struct serverInfo
 	{
+		/** @brief	The IP. */
 		char * ip;
+		/** @brief	The port. */
 		int port;
+		/** @brief	线程数. */
+		int nthread;
+		/** @brief	文件描述符数量. */
+		int backlog;
+		/** @brief	Information describing the user. */
 		userData_t  userData;
 	} serverInfo;
 
 public:
-	httpServer(char *ip, int port, void * userData);
+
+	/**
+	 @fn	httpServer::httpServer(char *ip, int port, void * userData);
+	
+	 @brief	创建一个http服务器.
+	
+	 @author	wangxin
+	 @date	2017/3/31
+	
+	 @param [in]	ip			服务器监视ip.
+	 @param 			port		服务器端口.
+	 @param [in,out]	userData	If non-null, information describing the user.
+	 */
+
+	httpServer(char *ip, int port, int nthread, int backlog, void * userData);
 	~httpServer();
 
 	inline void addInterfaceLogic(logicBase * logic) { if (logic != NULL) _interfaceLogicList.push_back(logic); }
@@ -46,7 +112,6 @@ public:
 	inline void addLogic(logicBase * logic) { if (_logic == NULL) _logic = logic; }
 	inline logicBase* getLogic() { return _logic; }
 
-	void getHttpData(struct evhttp_request* req, void* arg);
 	bool startServer();
 
 	void send404Error(struct evhttp_request* req, void* arg);

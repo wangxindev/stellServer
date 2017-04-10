@@ -38,7 +38,7 @@ int main(void)
 {
 	logicTest test("test");
 
-	httpServer server("0.0.0.0", 8000, NULL);
+	httpServer server("0.0.0.0", 8000, 10, 1024, NULL);
 	server.addInterfaceLogic(&test);
 	server.startServer();
 

@@ -1,24 +1,26 @@
 ﻿#include "httpServer.h"
 #include <thread>
 #include <iostream>
+#include <vector>
 
 int init_win_socket()
 {
+#ifdef WIN32
 	WSADATA wsaData;
 	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
 	{
 		return -1;
 	}
+#endif
 	return 0;
 }
 
-void ThreadHandler(struct evhttp_request* req, void* arg)
+void HttpServerHandler(struct evhttp_request* req, void* arg)
 {
 	std::cout << "thread id" << std::this_thread::get_id() << std::endl;
 	//获取请求的URI
 	const char* uri = (char*)evhttp_request_get_uri(req);
 	userData_t *data = (userData_t*)arg;
-	data->self->getHttpData(req, data->userData);
 
 	for (auto logic : data->self->getInterfaceLogicList())
 	{
@@ -42,22 +44,14 @@ void ThreadHandler(struct evhttp_request* req, void* arg)
 	data->self->send404Error(req, data->userData);
 }
 
-void HttpServerHandler(struct evhttp_request* req, void* arg)
-{
-#if 1
-	ThreadHandler(req, arg);
-#else
-	std::thread th(ThreadHandler, req, arg);
-	th.detach();
-#endif
-}
-
-httpServer::httpServer(char * ip, int port, void * userData_)
+httpServer::httpServer(char * ip, int port, int nthread, int backlog, void * userData_)
 {
 	_logic = NULL;
 	memset(&_info, '0', sizeof(serverInfo));
 	_info.ip = ip;
 	_info.port = port;
+	_info.nthread = nthread;
+	_info.backlog = backlog;
 	_info.userData.userData = userData_;
 	_info.userData.self = this;
 #ifdef WIN32
@@ -72,63 +66,63 @@ httpServer::~httpServer()
 #endif
 }
 
-void httpServer::getHttpData(struct evhttp_request* req, void* arg)
-{
-	std::string data;
-	//获取客户端请求的URI(使用evhttp_request_uri或直接req->uri)
-	const char *uri = evhttp_request_get_uri(req);
-	data.append("uri=");
-	data.append(uri);
-	data.append("\n");
-	//decoded uri
-	char *decoded_uri = evhttp_decode_uri(uri);
-	data.append("decoded_uri=");
-	data.append(decoded_uri);
-	data.append("\n");
-	//解析URI的参数(即GET方法的参数)
-	struct evkeyvalq *params = evhttp_request_get_input_headers(req);
-	evhttp_parse_query(decoded_uri, params);
-	data += "q=";
-	if (const char * str = evhttp_find_header(params, "q"))
-		data.append(str);
-	data += "\n";
-	data += "s=";
-	if (const char * str = evhttp_find_header(params, "s"))
-		data.append(str);
-	data += "\n";
-	free(decoded_uri);
-	//获取POST方法的数据
-	evbuffer * post_buff = evhttp_request_get_input_buffer(req);
-	char data_out[4096] = { 0 };
-	while (evbuffer_copyout(post_buff, data_out, 4096) > 0)
-	{
-		data += data_out;
-		memset(data_out, 0, 4096);
-	}
+int httpserver_bindsocket(int port, int backlog) {
+	int r;
+	int nfd;
+	nfd = socket(AF_INET, SOCK_STREAM, 0);
+	if (nfd < 0) return -1;
 
-	std::cout << data.c_str() << std::endl;
+	int one = 1;
+	r = setsockopt(nfd, SOL_SOCKET, SO_REUSEADDR, (char *)&one, sizeof(int));
+
+	struct sockaddr_in addr;
+	memset(&addr, 0, sizeof(addr));
+	addr.sin_family = AF_INET;
+	addr.sin_addr.s_addr = INADDR_ANY;
+	addr.sin_port = htons(port);
+
+	r = bind(nfd, (struct sockaddr*)&addr, sizeof(addr));
+	if (r < 0) return -1;
+	r = listen(nfd, backlog);
+	if (r < 0) return -1;
+
+#ifdef WIN32
+	u_long ul = 1;
+	ioctlsocket(nfd, FIONBIO, &ul);
+#else
+	int flags;
+	if ((flags = fcntl(nfd, F_GETFL, 0)) < 0
+		|| fcntl(nfd, F_SETFL, flags | O_NONBLOCK) < 0)
+		return -1;
+#endif
+
+	return nfd;
 }
 
 bool httpServer::startServer()
 {
+	int nfd = httpserver_bindsocket(_info.port & 0xFFFF, _info.backlog);
+	if (nfd < 0) return false;
+	for (int i = 0; i < _info.nthread; ++i)
+	{
+		struct event_base * base = event_base_new();
+		struct evhttp * http_server = evhttp_new(base);
+		if (!http_server)
+		{
+			return false;
+		}
 
-	//创建event_base和evhttp
-	event_base* base = event_base_new();
-	evhttp* http_server = evhttp_new(base);
-	if (!http_server) {
-		return false;
+		int r = evhttp_accept_socket(http_server, nfd);
+		if (r != 0) return false;
+		evhttp_set_gencb(http_server, HttpServerHandler, &_info.userData);
+		std::thread th(event_base_dispatch, base);
+		th.detach();
 	}
-	//绑定到指定地址上
-	int ret = evhttp_bind_socket(http_server, _info.ip, _info.port & 0xFFFF);
-	if (ret != 0) {
-		return false;
+	printf("http server start OK! thread num:%d\n" ,_info.nthread);
+	while (1)
+	{
+		Sleep(10000);
 	}
-	//设置事件处理函数
-	evhttp_set_gencb(http_server, HttpServerHandler, &_info.userData);
-
-	//启动事件循环，当有http请求的时候会调用指定的回调
-	event_base_dispatch(base);
-	evhttp_free(http_server);
 	return true;
 }
 
