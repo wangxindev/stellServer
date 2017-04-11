@@ -18,12 +18,15 @@
     <ClInclude Include="http_util.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="string_util.h">
+    <ClInclude Include="str_util.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="str_util.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

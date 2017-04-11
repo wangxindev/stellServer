@@ -58,6 +58,7 @@ void logHelp::logOut(ENUM_LOG_LEVEL2 _level, const char * _name, const char * _l
 	{
 		log_config con;
 		con.name = _name;
+		con.path = "./log/Main"
 		createLog(con);
 	}
 	

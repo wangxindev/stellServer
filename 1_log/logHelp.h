@@ -25,7 +25,7 @@ typedef struct log_config
 	bool fileLine = true;//是否显示文件行数
 	std::string path = "./";//文件输出路径
 	bool outFile = true;//是否输出到文件
-	bool monthDir = true;//是否开启月份文件夹
+	bool monthDir = false;//是否开启月份文件夹
 	int limitSize = 1;
 	std::string name = "main";//log名
 
