@@ -43,13 +43,6 @@ int main()
 #include <string.h>  
 #include <lua.hpp>
 
-
-#ifdef DEBUG
-#pragma comment(lib, "lua_mtd.lib")
-#else
-#pragma comment(lib, "lua_mt.lib")
-#endif
-
 using namespace std;  
 void main()  
 {  

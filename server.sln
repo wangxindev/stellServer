@@ -17,6 +17,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "logic", "logic\logic.vcxpro
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "6_userPermissionsMgr", "6_userPermissionsMgr\6_userPermissionsMgr.vcxproj", "{B816C109-5F9F-4EDB-8E57-73B56B4F25FD}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "7_util", "7_util\7_util.vcxproj", "{1C267E3B-C403-4DDC-9171-1102112735E8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -81,6 +83,14 @@ Global
 		{B816C109-5F9F-4EDB-8E57-73B56B4F25FD}.Release|x64.Build.0 = Release|x64
 		{B816C109-5F9F-4EDB-8E57-73B56B4F25FD}.Release|x86.ActiveCfg = Release|Win32
 		{B816C109-5F9F-4EDB-8E57-73B56B4F25FD}.Release|x86.Build.0 = Release|Win32
+		{1C267E3B-C403-4DDC-9171-1102112735E8}.Debug|x64.ActiveCfg = Debug|x64
+		{1C267E3B-C403-4DDC-9171-1102112735E8}.Debug|x64.Build.0 = Debug|x64
+		{1C267E3B-C403-4DDC-9171-1102112735E8}.Debug|x86.ActiveCfg = Debug|Win32
+		{1C267E3B-C403-4DDC-9171-1102112735E8}.Debug|x86.Build.0 = Debug|Win32
+		{1C267E3B-C403-4DDC-9171-1102112735E8}.Release|x64.ActiveCfg = Release|x64
+		{1C267E3B-C403-4DDC-9171-1102112735E8}.Release|x64.Build.0 = Release|x64
+		{1C267E3B-C403-4DDC-9171-1102112735E8}.Release|x86.ActiveCfg = Release|Win32
+		{1C267E3B-C403-4DDC-9171-1102112735E8}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
