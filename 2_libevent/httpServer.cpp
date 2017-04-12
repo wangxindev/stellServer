@@ -2,6 +2,7 @@
 #include <thread>
 #include <iostream>
 #include <vector>
+#include <exception>
 
 int init_win_socket()
 {
@@ -17,31 +18,42 @@ int init_win_socket()
 
 void HttpServerHandler(struct evhttp_request* req, void* arg)
 {
-	std::cout << "thread id" << std::this_thread::get_id() << std::endl;
-	//获取请求的URI
-	const char* uri = (char*)evhttp_request_get_uri(req);
 	userData_t *data = (userData_t*)arg;
-
-	for (auto logic : data->self->getInterfaceLogicList())
+	try
 	{
-		std::string str("/");
-		str.append(logic->getLogicInfo());
-		if (str.compare(uri) == 0)
+		std::cout << "thread id" << std::this_thread::get_id() << std::endl;
+		//获取请求的URI
+		const char* uri = (char*)evhttp_request_get_uri(req);
+
+		for (auto logic : data->self->getInterfaceLogicList())
 		{
-			logic->logic_run(req, data->userData);
+			std::string str("/");
+			str.append(logic->getLogicInfo());
+			if (str.compare(uri) == 0)
+			{
+				logic->logic_run(req, data->userData);
+				return;
+			}
+		}
+
+		//如果请求路径不是接口则执行正常业务
+		if (data->self->getLogic() != NULL)
+		{
+			data->self->getLogic()->logic_run(req, data->userData);
 			return;
 		}
-	}
 
-	//如果请求路径不是接口则执行正常业务
-	if (data->self->getLogic() != NULL)
+		//不是接口访问，又不是正常业务，则发送一个404错误
+		data->self->send404Error(req, data->userData);
+	}
+	catch (char * str)
 	{
-		data->self->getLogic()->logic_run(req, data->userData);
-		return;
+		data->self->send404Error(req, data->userData);
+		if (str != NULL)
+		{
+			std::cout << "查找业务错误:" << str << std::endl;
+		}
 	}
-
-	//不是接口访问，又不是正常业务，则发送一个404错误
-	data->self->send404Error(req, data->userData);
 }
 
 httpServer::httpServer(char * ip, int port, int nthread, int backlog, void * userData_)
