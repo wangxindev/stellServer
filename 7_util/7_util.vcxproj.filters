@@ -21,6 +21,9 @@
     <ClInclude Include="str_util.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="mutex.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
