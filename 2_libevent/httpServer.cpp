@@ -46,12 +46,12 @@ void HttpServerHandler(struct evhttp_request* req, void* arg)
 		//不是接口访问，又不是正常业务，则发送一个404错误
 		data->self->send404Error(req, data->userData);
 	}
-	catch (char * str)
+	catch (std::exception  * e)
 	{
 		data->self->send404Error(req, data->userData);
-		if (str != NULL)
+		if (e != NULL)
 		{
-			std::cout << "查找业务错误:" << str << std::endl;
+			std::cout << "查找业务错误:" << e->what() << std::endl;
 		}
 	}
 }
