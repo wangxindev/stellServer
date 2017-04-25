@@ -9,8 +9,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "2_libevent", "2_libevent\2_
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "3_libcurl", "3_libcurl\3_libcurl.vcxproj", "{72E0B3E2-98DD-41C5-93AF-75D524ED3C81}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "4_jsoncpp", "4_jsoncpp\4_jsoncpp.vcxproj", "{91C3E464-195F-4A89-BF81-C36882DE3BBF}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "5_lua", "5_lua\5_lua.vcxproj", "{D8A35C9C-047A-4779-A06E-848767104D48}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "logic", "logic\logic.vcxproj", "{48A8ACEB-DAC8-49F8-A42D-7540F5795977}"
@@ -20,6 +18,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "7_util", "7_util\7_util.vcxproj", "{1C267E3B-C403-4DDC-9171-1102112735E8}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "8_sqlite", "8_sqlite\8_sqlite.vcxproj", "{D2796BEE-EFDD-4559-87C2-1B1C5E80398E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "4_rapidjson", "4_rapidjson\4_rapidjson.vcxproj", "{CCD772D1-1D14-4512-93B4-1564DF62782B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,14 +53,6 @@ Global
 		{72E0B3E2-98DD-41C5-93AF-75D524ED3C81}.Release|x64.Build.0 = Release|x64
 		{72E0B3E2-98DD-41C5-93AF-75D524ED3C81}.Release|x86.ActiveCfg = Release|Win32
 		{72E0B3E2-98DD-41C5-93AF-75D524ED3C81}.Release|x86.Build.0 = Release|Win32
-		{91C3E464-195F-4A89-BF81-C36882DE3BBF}.Debug|x64.ActiveCfg = Debug|x64
-		{91C3E464-195F-4A89-BF81-C36882DE3BBF}.Debug|x64.Build.0 = Debug|x64
-		{91C3E464-195F-4A89-BF81-C36882DE3BBF}.Debug|x86.ActiveCfg = Debug|Win32
-		{91C3E464-195F-4A89-BF81-C36882DE3BBF}.Debug|x86.Build.0 = Debug|Win32
-		{91C3E464-195F-4A89-BF81-C36882DE3BBF}.Release|x64.ActiveCfg = Release|x64
-		{91C3E464-195F-4A89-BF81-C36882DE3BBF}.Release|x64.Build.0 = Release|x64
-		{91C3E464-195F-4A89-BF81-C36882DE3BBF}.Release|x86.ActiveCfg = Release|Win32
-		{91C3E464-195F-4A89-BF81-C36882DE3BBF}.Release|x86.Build.0 = Release|Win32
 		{D8A35C9C-047A-4779-A06E-848767104D48}.Debug|x64.ActiveCfg = Debug|x64
 		{D8A35C9C-047A-4779-A06E-848767104D48}.Debug|x64.Build.0 = Debug|x64
 		{D8A35C9C-047A-4779-A06E-848767104D48}.Debug|x86.ActiveCfg = Debug|Win32
@@ -101,6 +93,14 @@ Global
 		{D2796BEE-EFDD-4559-87C2-1B1C5E80398E}.Release|x64.Build.0 = Release|x64
 		{D2796BEE-EFDD-4559-87C2-1B1C5E80398E}.Release|x86.ActiveCfg = Release|Win32
 		{D2796BEE-EFDD-4559-87C2-1B1C5E80398E}.Release|x86.Build.0 = Release|Win32
+		{CCD772D1-1D14-4512-93B4-1564DF62782B}.Debug|x64.ActiveCfg = Debug|x64
+		{CCD772D1-1D14-4512-93B4-1564DF62782B}.Debug|x64.Build.0 = Debug|x64
+		{CCD772D1-1D14-4512-93B4-1564DF62782B}.Debug|x86.ActiveCfg = Debug|Win32
+		{CCD772D1-1D14-4512-93B4-1564DF62782B}.Debug|x86.Build.0 = Debug|Win32
+		{CCD772D1-1D14-4512-93B4-1564DF62782B}.Release|x64.ActiveCfg = Release|x64
+		{CCD772D1-1D14-4512-93B4-1564DF62782B}.Release|x64.Build.0 = Release|x64
+		{CCD772D1-1D14-4512-93B4-1564DF62782B}.Release|x86.ActiveCfg = Release|Win32
+		{CCD772D1-1D14-4512-93B4-1564DF62782B}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
