@@ -29,10 +29,15 @@ void HttpServerHandler(struct evhttp_request* req, void* arg)
 		{
 			std::string str("/");
 			str.append(logic->getLogicInfo());
-			if (str.compare(uri) == 0)
+			char uriBuf[1024] = { 0 };
+			if (strlen(uri) < 1023 && str.size() < 1023)
 			{
-				logic->logic_run(req, data->userData);
-				return;
+				strncpy(uriBuf, uri, str.size());
+				if (str.compare(uriBuf) == 0)
+				{
+					logic->logic_run(req, data->userData);
+					return;
+				}
 			}
 		}
 
