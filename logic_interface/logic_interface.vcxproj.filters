@@ -57,6 +57,9 @@
     <ClCompile Include="logicHttpSendJson.cpp">
       <Filter>LOGIC</Filter>
     </ClCompile>
+    <ClCompile Include="..\4_rapidjson\jsonHelp.cpp">
+      <Filter>CPP</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\3_libcurl\EasyCurl.h">
@@ -100,6 +103,9 @@
     </ClInclude>
     <ClInclude Include="logicHttpSendJson.h">
       <Filter>LOGIC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\4_rapidjson\jsonHelp.h">
+      <Filter>HPP</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

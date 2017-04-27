@@ -272,6 +272,7 @@
     <ClCompile Include="..\1_log\logHelp.cpp" />
     <ClCompile Include="..\2_libevent\httpServer.cpp" />
     <ClCompile Include="..\3_libcurl\EasyCurl.cpp" />
+    <ClCompile Include="..\4_rapidjson\jsonHelp.cpp" />
     <ClCompile Include="..\6_userPermissionsMgr\userPermissionsMgr.cpp" />
     <ClCompile Include="..\7_util\str_util.cpp" />
     <ClCompile Include="..\8_sqlite\sqlite_help.cpp" />
@@ -285,6 +286,7 @@
     <ClInclude Include="..\1_log\util.h" />
     <ClInclude Include="..\2_libevent\httpServer.h" />
     <ClInclude Include="..\3_libcurl\EasyCurl.h" />
+    <ClInclude Include="..\4_rapidjson\jsonHelp.h" />
     <ClInclude Include="..\6_userPermissionsMgr\userPermissionsMgr.h" />
     <ClInclude Include="..\7_util\http_util.h" />
     <ClInclude Include="..\7_util\mutex.h" />

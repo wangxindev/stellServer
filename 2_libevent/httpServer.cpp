@@ -21,7 +21,9 @@ void HttpServerHandler(struct evhttp_request* req, void* arg)
 	userData_t *data = (userData_t*)arg;
 	try
 	{
-		std::cout << "thread id" << std::this_thread::get_id() << std::endl;
+#ifdef DEBUG
+		std::cout << "=======================================thread id:" << std::this_thread::get_id() << std::endl;
+#endif
 		//获取请求的URI
 		const char* uri = (char*)evhttp_request_get_uri(req);
 
@@ -30,7 +32,7 @@ void HttpServerHandler(struct evhttp_request* req, void* arg)
 			std::string str("/");
 			str.append(logic->getLogicInfo());
 			char uriBuf[1024] = { 0 };
-			if (strlen(uri) < 1023 && str.size() < 1023)
+			if (strlen(uri)>=str.size() && strlen(uri) < 1023 && str.size() < 1023)
 			{
 				strncpy(uriBuf, uri, str.size());
 				if (str.compare(uriBuf) == 0)

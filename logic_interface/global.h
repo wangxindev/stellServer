@@ -13,6 +13,7 @@
 
 #include "rapidjson/document.h"     // rapidjson's DOM-style API
 #include "rapidjson/prettywriter.h" // for stringify JSON
+#include "jsonHelp.h"
 #include <lua.hpp>
 #include "loginit.h"
 

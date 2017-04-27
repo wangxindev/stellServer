@@ -42,11 +42,12 @@ public:
 		//获取POST方法的数据
 		std::string data;
 		evbuffer * post_buff = evhttp_request_get_input_buffer(req);
-		char data_out[4096] = { 0 };
-		while (evbuffer_copyout(post_buff, data_out, 4096) > 0)
-		{
-			data += data_out;
-			memset(data_out, 0, 4096);
+
+		while (evbuffer_get_length(post_buff)) {
+			int n;
+			char cbuf[128] = { 0 };
+			n = evbuffer_remove(post_buff, cbuf, sizeof(post_buff) - 1);
+			data += cbuf;
 		}
 		return data;
 	}
