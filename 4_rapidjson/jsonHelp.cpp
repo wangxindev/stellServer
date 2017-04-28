@@ -1,107 +1,141 @@
 #include "jsonHelp.h"
 
-nameNode* jsonHelp::getCdom(nameNode * node, Value::MemberIterator iter)
+
+bool InterfaceHandler::Null()
 {
-	if (/*isArray(iter) || */iter->value.IsObject())
-	{
-		for (auto begin = iter->value.MemberBegin(); begin != iter->value.MemberEnd(); ++begin)
-		{
-			if (begin->name.IsString())
-			{
-#ifdef DEBUG
-				cout << "key:" << begin->name.GetString() << endl;
-#endif
-				nameNode name(begin->name.GetString(),getStringValue(begin));
-				string value(getType(begin));
-				if (/*isArray(begin) || */iter->value.IsObject()) //这个元素是数组,迭代处理
-					getCdom(&name,begin);
-				pair<nameNode, string> key(name, value);
-				node->jsonKeys.push_back(key);
-			}
-		}
-	}
-	return  node;
+	jsonNodePtr node(new jsonNode);
+	node->setNodeType(eValue);
+	node->setNodeData("null");
+	node->setNodeDataType("null");
+	_currJsonNode->setChildNode(node);
+	return true;
 }
 
-jsonKey jsonHelp::getCjsonArray(string json, int* errn)
+bool InterfaceHandler::Bool(bool b)
 {
-	Document document;
-	jsonKey jsonKeys;
-
-	const char *jsonCstr = json.c_str();
-	const int jsonSize = json.size() + 1;
-	char *buffer = new char[jsonSize];
-	memcpy(buffer, jsonCstr, jsonSize);
-	if (document.ParseInsitu(buffer).HasParseError())
-	{
-		*errn = -1;
-		delete buffer;
-		return jsonKeys;
-	}
-
-	for (auto begin = document.MemberBegin(); begin != document.MemberEnd(); ++begin)
-	{
-		if (begin->name.IsString())
-		{
-			nameNode name(begin->name.GetString(), getStringValue(begin));
-			string valueType(getType(begin));
-			if (/*valueType.compare("Array") == 0 || */valueType.compare("Object") == 0)
-			{//这个元素是数组
-				getCdom(&name, begin);
-			}
-			pair<nameNode, string> key(name, valueType);
-			jsonKeys.push_back(key);
-		}
-	}
-	*errn = 0;
-	delete buffer;
-	return jsonKeys;
+	jsonNodePtr node(new jsonNode);
+	node->setNodeType(eValue);
+	node->setNodeData(toString(b));
+	node->setNodeDataType("bool");
+	_currJsonNode->setChildNode(node);
+	return true;
 }
 
-string jsonHelp::getType(Value::MemberIterator iter)
+bool InterfaceHandler::Int(int i)
 {
-	static const char* kTypeNames[] =
-	{ "Null", "False", "True", "Object", "Array", "String", "Number" };
-	string value(kTypeNames[iter->value.GetType()]);
-	return value;
+	jsonNodePtr node(new jsonNode);
+	node->setNodeType(eValue);
+	node->setNodeData(toString(i));
+	node->setNodeDataType("int");
+	_currJsonNode->setChildNode(node);
+	return true;
 }
 
-bool jsonHelp::isArray(Value::MemberIterator iter)
+bool InterfaceHandler::Uint(unsigned i)
 {
-	return getType(iter).compare("Array") == 0;
+	jsonNodePtr node(new jsonNode);
+	node->setNodeType(eValue);
+	node->setNodeData(toString(i));
+	node->setNodeDataType("uint");
+	_currJsonNode->setChildNode(node);
+	return true;
 }
 
-string jsonHelp::getStringValue(Value::MemberIterator iter)
+bool InterfaceHandler::Int64(int64_t i)
 {
-	string type(getType(iter));
-	char buf[1024] = { 0 };
-	if (type.compare("String") == 0)
-	{
-		return iter->value.GetString();
-	}
-	else if (type.compare("Number") == 0)
-	{
-		if (iter->value.IsInt())
-		{
-			sprintf(buf, "%d", iter->value.GetInt());
-			return buf;
-		}
-		else if (iter->value.IsDouble())
-		{
-			sprintf(buf, "%lf", iter->value.GetInt());
-			return buf;
-		}
-	}
-	else if (type.compare("False") == 0)
-		return "false";
-	else if (type.compare("True") == 0)
-		return "true";
-	else if (type.compare("Null") == 0)
-		return "null";
-	else if (type.compare("Object") == 0)
-		return "object";
-	else if (type.compare("Array") == 0)
-		return "array";
-	else
-		return "";
+	jsonNodePtr node(new jsonNode);
+	node->setNodeType(eValue);
+	node->setNodeData(toString(i));
+	node->setNodeDataType("int64");
+	_currJsonNode->setChildNode(node);
+	return true;
 }
+
+bool InterfaceHandler::Uint64(uint64_t i)
+{
+	jsonNodePtr node(new jsonNode);
+	node->setNodeType(eValue);
+	node->setNodeData(toString(i));
+	node->setNodeDataType("uint64");
+	_currJsonNode->setChildNode(node);
+	return true;
+}
+
+bool InterfaceHandler::Double(double d)
+{
+	jsonNodePtr node(new jsonNode);
+	node->setNodeType(eValue);
+	node->setNodeData(toString(d));
+	node->setNodeDataType("double");
+	_currJsonNode->setChildNode(node);
+	return true;
+}
+
+bool InterfaceHandler::RawNumber(const Ch* str, SizeType length, bool copy)
+{
+	return true;
+}
+
+bool InterfaceHandler::String(const Ch* str, SizeType length, bool copy)
+{
+	jsonNodePtr node(new jsonNode);
+	node->setNodeType(eValue);
+	node->setNodeData(str);
+	node->setNodeDataType("string");
+	_currJsonNode->setChildNode(node);
+	return true;
+}
+
+bool InterfaceHandler::StartObject()
+{
+	jsonNodePtr node(new jsonNode);
+	node->setNodeType(eObject);
+	_currJsonNode->setChildNode(node);
+	vector<jsonNodePtr> nodes = _currJsonNode->getChildNodes();
+	_currJsonNode = node;
+
+	return true;
+}
+
+bool InterfaceHandler::Key(const Ch* str, SizeType length, bool copy)
+{
+	jsonNodePtr node(new jsonNode);
+	node->setNodeType(eKey);
+	node->setNodeData(str);
+	node->setNodeDataType("string");
+	_currJsonNode->setChildNode(node);
+	return true;
+}
+
+bool InterfaceHandler::EndObject(SizeType memberCount)
+{
+	_currJsonNode = _currJsonNode->getFatherNode();
+	return true;
+}
+
+bool InterfaceHandler::StartArray()
+{
+	jsonNodePtr node(new jsonNode);
+	node->setNodeType(eArray);
+	_currJsonNode->setChildNode(node);
+	vector<jsonNodePtr> nodes = _currJsonNode->getChildNodes();
+	_currJsonNode = node;
+	return true;
+}
+
+bool InterfaceHandler::EndArray(SizeType elementCount)
+{
+	_currJsonNode = _currJsonNode->getFatherNode();
+	return true;
+}
+
+bool jsonHelp::parseJson()
+{
+	InterfaceHandler handler;
+	Reader reader;
+	StringStream ss(_json);
+	reader.Parse(ss, handler);
+	_JsonNode = handler.getJsonNode();
+	return true;
+}
+
