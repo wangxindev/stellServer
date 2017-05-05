@@ -19,6 +19,8 @@
 #include <map>
 #include <list>
 #include <iterator>
+#include <stdio.h>
+#include <string.h>
 using namespace std;
 
 #define HTTPUTIL_BUFFER_SIZE		32*1024

@@ -2,6 +2,9 @@
 #ifndef __USER_PERMISSIONS_MGR_H_
 #define __USER_PERMISSIONS_MGR_H_
 #include <list>
+#include <string>
+using std::list;
+using std::string;
 class userPermissionsMgr
 {
 public:
@@ -22,11 +25,11 @@ private://权限管理
 	bool isOpenIpWhiteList() { return isIpWhiteListOn; }//检查是否开启ip白名单
 	bool isOpenIpBlacklist() { return isIpBlacklistOn; }//检查是否开启ip黑名单
 
-	void register_ipList(std::list<std::string> &ipList, const char *ip);
-	void remove_IpList(std::list<std::string> &ipList, const char * ip);
+	void register_ipList(list<string > ipList, const char *ip);
+	void remove_IpList(list<string > ipList, const char * ip);
 
-	static std::list<std::string> ipWhiteList;//ip白名单
-	static std::list<std::string> ipBlacklist;//ip黑名单
+	list<string> ipWhiteList;//ip白名单
+	list<string> ipBlacklist;//ip黑名单
 
 	bool isIpWhiteListOn;//白名单是否开启
 	bool isIpBlacklistOn;//黑名单是否开启

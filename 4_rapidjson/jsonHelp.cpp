@@ -1,6 +1,9 @@
 #include "jsonHelp.h"
-#include <Exception>
+#include <exception>
 #include <mutex>
+#include <fstream>
+using std::ifstream;
+using std::ofstream;
 using std::exception;
 std::mutex mtx_Relate;
 
@@ -46,8 +49,6 @@ void jsonHelp::createSql()
 
 bool jsonHelp::createSqlCreate(jsonNode * node, const char * table, bool isRelate /*= false*/)
 {
-	
-
 	string sqlCreate = "CREATE TABLE ";
 	sqlCreate.append(table);
 	sqlCreate.append(" (");
@@ -68,12 +69,14 @@ bool jsonHelp::createSqlCreate(jsonNode * node, const char * table, bool isRelat
 		eJsonNodeType type = jNode->getNodeType();
 		if (type == eArray || type == eObject)
 		{
+			if (type == eArray)
 			{
 				sqlCreate.append("  ");
 				sqlCreate.append(jNode->getNodeDataType());
 				sqlCreate.append(",");
 			}
 			string table_s = table;
+			table_s.append("_");
 			table_s.append(jNode->getNodeKey());
 			createSqlCreate(jNode.get(), table_s.c_str(), true);
 		}
@@ -99,12 +102,12 @@ bool jsonHelp::createSqlCreate(jsonNode * node, const char * table, bool isRelat
 	return true;;
 }
 
-bool jsonHelp::updateSqlCreate(jsonNode * node, const char * table)
+bool jsonHelp::updateSqlCreate(jsonNode * node, const char * table, bool isRelate /*= false*/)
 {
 	return true;
 }
 
-bool jsonHelp::insertSqlCreate(jsonNode * node, const char * table)
+bool jsonHelp::insertSqlCreate(jsonNode * node, const char * table, bool isRelate, string relateData)
 {
 	string sqlKey ="INSERT INTO ";
 	{
@@ -113,29 +116,49 @@ bool jsonHelp::insertSqlCreate(jsonNode * node, const char * table)
 	}
 	string sqlValue = " VALUES (";
 
+	if (isRelate)
+	{//处理关联的数据
+		sqlKey.append("  ");
+		sqlKey.append(table);
+		sqlKey.append(",");
+		sqlValue.append("  ");
+		sqlValue.append(relateData);
+		sqlValue.append(",");
+	}
+
 	jsonNodeVecPtr nodes = node->getChildNodes();
 	int size = nodes.size();
 	for (int i = 0; i < size; ++i)
 	{
 		jsonNodePtr jNode = nodes[i];
 		eJsonNodeType type = jNode->getNodeType();
-		int  idx = 0;
 		if (type == eArray || type == eObject)
 		{
+			string str_Mutex_Int;
+			if (type == eArray)
 			{
-				idx++;
-				char buf[256] = { 0 };
-				sprintf(buf, "%s_%s_%d", table, jNode->getNodeKey().c_str(), idx);
-				sqlKey.append(buf);
-				{
-					sqlValue.append("  ");
-					sqlValue.append("1");
-					sqlValue.append(",");
-				}
+				mtx_Relate.lock();
+				ifstream ifsMutexIncrementInt;
+				ifsMutexIncrementInt.open("./mutex");
+				ifsMutexIncrementInt >> str_Mutex_Int;
+				ifsMutexIncrementInt.close();
+				ofstream ofsIncrementMutexInt;
+				ofsIncrementMutexInt.open("./mutex");
+				int str_index = atoi(str_Mutex_Int.c_str());
+				ofsIncrementMutexInt << ++str_index;
+				ofsIncrementMutexInt.close();
+				mtx_Relate.unlock();
+
+
+				sqlValue.append("  ");
+				sqlValue.append(toString(str_Mutex_Int));
+				sqlValue.append(",");
 			}
+
 			string table_s = table;
-			table_s.append(node->getNodeKey());
-			insertSqlCreate(jNode.get(), table_s.c_str());
+			table_s.append("_");
+			table_s.append(jNode->getNodeKey());
+			insertSqlCreate(jNode.get(), table_s.c_str(), true , str_Mutex_Int);
 		}
 		else if (type == eKey)
 		{

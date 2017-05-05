@@ -17,7 +17,7 @@ class EasyCurl
 public:
 	EasyCurl(void);
 	~EasyCurl(void);
-	typedef std::tr1::function<void(int)>  ProgressFunction;
+	typedef std::function<void(int)>  ProgressFunction;
 
 public:
 

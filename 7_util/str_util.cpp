@@ -2,12 +2,12 @@
 
 
 
-std::string& str_util::trim(std::string &s, char c)
+string& str_util::trim(string &s, char c)
 {
 	int index = 0;
 	if (!s.empty())
 	{
-		while ((index = s.find(c, index)) != std::string::npos)
+		while ((index = s.find(c, index)) != string::npos)
 		{
 			s.erase(index, 1);
 		}
@@ -15,10 +15,10 @@ std::string& str_util::trim(std::string &s, char c)
 	return s;
 }
 
-std::vector<std::string> str_util::split(std::string str, std::string pattern)
+vector<string> str_util::split(string str, string pattern)
 {
-	std::string::size_type pos;
-	std::vector<std::string> result;
+	string::size_type pos;
+	vector<string> result;
 	str += pattern;//扩展字符串以方便操作
 	int size = str.size();
 
@@ -27,7 +27,7 @@ std::vector<std::string> str_util::split(std::string str, std::string pattern)
 		pos = str.find(pattern, i);
 		if (pos < size)
 		{
-			std::string s = str.substr(i, pos - i);
+			string s = str.substr(i, pos - i);
 			result.push_back(s);
 			i = pos + pattern.size() - 1;
 		}
@@ -35,12 +35,12 @@ std::vector<std::string> str_util::split(std::string str, std::string pattern)
 	return result;
 }
 
-std::string str_util::getInfoByReadTxt(char * pathname)
+string str_util::getInfoByReadTxt(char * pathname)
 {
 	std::ifstream ifs;
 	ifs.open(pathname);
 
-	std::string strData;
+	string strData;
 	char buf[2] = { 0 };
 
 	while (ifs.read(buf, 1))
@@ -53,7 +53,7 @@ std::string str_util::getInfoByReadTxt(char * pathname)
 	return strData;
 }
 
-std::string str_util::GetStr(std::string str)
+string str_util::GetStr(string str)
 {
 	if (str.empty())
 		return "";
@@ -76,9 +76,9 @@ unsigned char str_util::FromHex(unsigned char x)
 	return y;
 }
 
-std::string str_util::UrlEncode(const std::string& str)
+string str_util::UrlEncode(const string& str)
 {
-	std::string strTemp = "";
+	string strTemp = "";
 	size_t length = str.length();
 	for (size_t i = 0; i < length; i++)
 	{
@@ -100,9 +100,9 @@ std::string str_util::UrlEncode(const std::string& str)
 	return strTemp;
 }
 
-std::string str_util::UrlDecode(const std::string& str)
+string str_util::UrlDecode(const string& str)
 {
-	std::string strTemp = "";
+	string strTemp = "";
 	size_t length = str.length();
 	for (size_t i = 0; i < length; i++)
 	{
@@ -120,13 +120,13 @@ std::string str_util::UrlDecode(const std::string& str)
 }
 
 #ifdef WIN32
-void str_util::getFiles(std::string _path, std::string _exd, std::vector<std::string>& _files)
+void str_util::getFiles(string _path, string _exd, vector<string>& _files)
 {
 	//文件句柄
 	long   hFile = 0;
 	//文件信息
 	struct _finddata_t fileinfo;
-	std::string pathName, exdName;
+	string pathName, exdName;
 
 	if (0 != strcmp(_exd.c_str(), ""))
 	{
@@ -194,9 +194,9 @@ bool str_util::DeleteDirectory(const char * DirName)
 		IsFinded = FindNextFileA(hFile, &FindFileData);    //递归搜索其他的文件
 		if (strcmp(FindFileData.cFileName, ".") && strcmp(FindFileData.cFileName, "..")) //如果不是"." ".."目录
 		{
-			std::string strFileName = "";
+			string strFileName = "";
 			strFileName = strFileName + DirName + "//" + FindFileData.cFileName;
-			std::string strTemp;
+			string strTemp;
 			strTemp = strFileName;
 			if (IsDirectory(strFileName.c_str())) //如果是目录，则递归地调用
 			{
@@ -218,9 +218,9 @@ bool str_util::DeleteDirectory(const char * DirName)
 	return true;
 }
 
-std::string str_util::getName_byPath(const char * _path)
+string str_util::getName_byPath(const char * _path)
 {
-	std::string filename;
+	string filename;
 	char szDrive[_MAX_DRIVE];   //磁盘名
 	char szDir[_MAX_DIR];       //路径名
 	char szFname[_MAX_FNAME];   //文件名

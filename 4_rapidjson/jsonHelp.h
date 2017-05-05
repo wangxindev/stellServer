@@ -103,7 +103,7 @@ public:
 		delete _currJsonNode;
 	}
 
-	bool Null() { setChildNode(eValue, "NULL", "NULL"); return true; }
+	bool Null() { setChildNode(eValue, "'NULL'", "TEXT"); return true; }
 	bool Bool(bool b) { setChildNode(eValue, b, "INTEGER"); return true; }
 	bool Int(int i) { setChildNode(eValue, i, "INTEGER"); return true; }
 	bool Uint(unsigned i) { setChildNode(eValue, i, "INTEGER"); return true; }
@@ -111,7 +111,14 @@ public:
 	bool Uint64(uint64_t i) { setChildNode(eValue, i, "INTEGER"); return true; }
 	bool Double(double d) { setChildNode(eValue, d, "REAL"); return true; }
 	bool RawNumber(const Ch* str, SizeType length, bool copy) { return true; }
-	bool String(const Ch* str, SizeType length, bool copy) { setChildNode(eValue, str, "TEXT"); return true; }
+	bool String(const Ch* str, SizeType length, bool copy) 
+	{ 
+		string sstr = "'";
+		sstr.append(str);
+		sstr.append("'");
+		setChildNode(eValue, sstr.c_str(), "TEXT");
+		return true;
+	}
 	bool StartObject() { setAssembledNode(eObject); return true; }
 	bool Key(const Ch* str, SizeType length, bool copy) { setChildNode(eKey, str, "TEXT"); return true; }
 	bool EndObject(SizeType memberCount) { _currJsonNode = _currJsonNode->getFatherNode(); return true; }
@@ -160,8 +167,11 @@ public:
 	void createSql();
 
 	bool createSqlCreate(jsonNode * node, const char * table, bool isRelate = false);
-	bool updateSqlCreate(jsonNode * node, const char * table);
-	bool insertSqlCreate(jsonNode * node, const char * table);
+	bool updateSqlCreate(jsonNode * node, const char * table, bool isRelate = false);
+	bool insertSqlCreate(jsonNode * node, const char * table, bool isRelate = false, string relateData = "");
+
+	inline vector<string> getInsertSql() { return _insertTableSqlVec; }
+	inline vector<string> getCreateSql() { return _createTableSqlVec; }
 	
 
 private:

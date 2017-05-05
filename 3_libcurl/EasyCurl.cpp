@@ -168,7 +168,11 @@ int EasyCurl::download_file(const string & strUrl, const string & strFile)
 	CURL *curl = curl_easy_init();
 	if (curl)
 	{
+#ifdef WIN32
 		fopen_s(&fp, strFile.c_str(), "wb");
+#else
+		fp = fopen(strFile.c_str(), "wb");
+#endif
 
 		CURLcode res = curl_easy_setopt(curl, CURLOPT_URL, strUrl.c_str());
 		if (res != CURLE_OK)

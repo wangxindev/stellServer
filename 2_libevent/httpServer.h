@@ -5,7 +5,15 @@
 #include <event2/event.h>
 #include <event2/buffer.h>
 #include <event2/http.h>
+#include <string>
+#include <stdio.h>
+#include <string.h>
 
+#ifndef WIN32
+#include <sys/types.h>
+#include <unistd.h>
+#include <fcntl.h>
+#endif
 /**
  @class	logicBase
 

@@ -1,13 +1,10 @@
 #include "userPermissionsMgr.h"
-#include <string>
 #include <cstdio>
 #include <stdlib.h>
 #include <iostream>
 #include <fstream>
 #include <cassert>
 
-std::list<std::string> userPermissionsMgr::ipWhiteList;
-std::list<std::string> userPermissionsMgr::ipBlacklist;
 userPermissionsMgr::userPermissionsMgr()
 {
 	isIpBlacklistOn = true;
@@ -20,9 +17,9 @@ userPermissionsMgr::~userPermissionsMgr()
 }
 
 
-void userPermissionsMgr::register_ipList(std::list<std::string>& ipList, const char * ip)
+void userPermissionsMgr::register_ipList(list<string > ipList, const char * ip)
 {
-	std::list<std::string>::iterator iter;
+	list<string >::iterator iter;
 	iter = ipList.begin();
 	bool CanReg = true;
 	for (; iter != ipList.end(); ++iter)
@@ -31,7 +28,7 @@ void userPermissionsMgr::register_ipList(std::list<std::string>& ipList, const c
 
 	if (CanReg)
 	{
-		std::string str(ip);
+		string str(ip);
 		ipList.push_back(str);
 	}
 }
@@ -46,9 +43,9 @@ void userPermissionsMgr::register_ipBlacklist(const char * ip)
 	register_ipList(ipBlacklist, ip);
 }
 
-void userPermissionsMgr::remove_IpList(std::list<std::string> &ipList, const char * ip)
+void userPermissionsMgr::remove_IpList(list<string > ipList, const char * ip)
 {
-	std::list<std::string>::iterator iter;
+	list<string >::iterator iter;
 	iter = ipList.begin();
 	for (; iter != ipList.end(); ++iter)
 		if ((*iter).compare(ip) == 0)
@@ -92,12 +89,12 @@ bool userPermissionsMgr::checkPermissions(const char * userIP)
 }
 
 //去掉所有空格
-void trim(std::string &s)
+void trim(string &s)
 {
     int index = 0;
     if( !s.empty())
     {
-        while( (index = s.find(' ',index)) != std::string::npos)
+        while( (index = s.find(' ',index)) != string::npos)
         {
             s.erase(index,1);
         }
@@ -113,7 +110,7 @@ void userPermissionsMgr::loadFileRegIP()
 		return;
 	one = true;
 
-	std::string line;
+	string line;
 
 	std::ifstream ifsBlack;
 	ifsBlack.open("黑名单.config");

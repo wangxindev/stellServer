@@ -11,3 +11,6 @@ Release
 /logic_interface/log
 /logic_interface/log
 /logic_interface/logic_interface_main_*
+/logic_interface/Win32_Release
+/Win32_Release
+/logic_interface/mutex

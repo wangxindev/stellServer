@@ -5,6 +5,7 @@
 #include <vector>
 #include <fstream>
 #include <iostream>
+#include <sstream>
 #ifdef WIN32
 #include <io.h>
 #include"windows.h"
@@ -12,9 +13,36 @@
 #else
 #endif
 
+using std::string;
+using std::vector;
+
 class str_util
 {
 public:
+
+	template <class T>
+
+	/**
+	 @fn	static string str_util::toString(T data)
+	
+	 @brief	将一个类型转换为string..
+	
+	 @author	wangxin
+	 @date	2017/5/4
+	
+	 @param	data	The data.
+	
+	 @return	A string that represents this object.
+	 */
+
+	static string toString(T data)
+	{
+		std::stringstream sstr;
+		string str;
+		sstr << data;
+		sstr >> str;
+		return str;
+	}
 
 	/**
 	@fn	std::string& trim(std::string &s, char c)
@@ -29,10 +57,10 @@ public:
 
 	@return	返回去除字符的字符串引用，与传进来的string为同一个对象
 	*/
-	static std::string& trim(std::string &s, char c);
+	static string& trim(string &s, char c);
 
 	/**
-	 @fn	std::vector<std::string> split(std::string str, std::string pattern)
+	 @fn	std::vector<string> split(string str, string pattern)
 
 	 @brief	字符串分割函数.
 
@@ -45,9 +73,9 @@ public:
 	 @return	返回一个分割后的字符串数组;
 	 */
 
-	static std::vector<std::string> split(std::string str, std::string pattern);
+	static vector<string> split(string str, string pattern);
 
-	static std::string getInfoByReadTxt(char * pathname);
+	static string getInfoByReadTxt(char * pathname);
 
 	/**
 	 @fn	std::string GetStr(std::string str);
@@ -62,15 +90,15 @@ public:
 	 @return	The string.
 	 */
 
-	static std::string GetStr(std::string str);
+	static string GetStr(string str);
 
 	static unsigned char ToHex(unsigned char x);
 
 	static unsigned char FromHex(unsigned char x);
 
-	static std::string UrlEncode(const std::string& str);
+	static string UrlEncode(const string& str);
 
-	static std::string UrlDecode(const std::string& str);
+	static string UrlDecode(const string& str);
 
 #ifdef WIN32
 
@@ -87,7 +115,7 @@ public:
 	 @param [in,out]	_files	返回的文件名集合，文件名包含路径.
 	 */
 
-	static void getFiles(std::string _path, std::string _exd, std::vector<std::string>& _files);
+	static void getFiles(string _path, string _exd, std::vector<string>& _files);
 
 	/**
 	 @fn	bool IsDirectory(const char * pDir)
@@ -132,7 +160,7 @@ public:
 	 @return	返回文件名
 	 */
 
-	static std::string getName_byPath(const char * _path);
+	static string getName_byPath(const char * _path);
 #else
 #endif
 

@@ -4,6 +4,8 @@
 #include <string>
 #include <mutex>
 #include "../1_log/logHelp.h"
+#include <string.h>
+#include <stdio.h>
 
 static char *logB = new char[10240];
 static std::mutex mtx_logBuf;

@@ -32,7 +32,7 @@ void HttpServerHandler(struct evhttp_request* req, void* arg)
 			std::string str("/");
 			str.append(logic->getLogicInfo());
 			char uriBuf[1024] = { 0 };
-			if (strlen(uri)>=str.size() && strlen(uri) < 1023 && str.size() < 1023)
+			if (strlen(uri) >= str.size() && strlen(uri) < 1023 && str.size() < 1023)
 			{
 				strncpy(uriBuf, uri, str.size());
 				if (str.compare(uriBuf) == 0)
@@ -137,10 +137,14 @@ bool httpServer::startServer()
 		std::thread th(event_base_dispatch, base);
 		th.detach();
 	}
-	printf("http server start OK! thread num:%d\n" ,_info.nthread);
+	printf("http server start OK! thread num:%d\n", _info.nthread);
 	while (1)
 	{
+#ifdef WIN32
 		Sleep(10000);
+#else
+		sleep(10);
+#endif
 	}
 	return true;
 }
