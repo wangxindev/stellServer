@@ -12,7 +12,7 @@ logHelp::logHelp()
     ILog4zManager::getRef().setLoggerLevel(LOG4Z_MAIN_LOGGER_ID, LOG_LEVEL_DEBUG);
     ILog4zManager::getRef().setLoggerFileLine(LOG4Z_MAIN_LOGGER_ID, false);
     ILog4zManager::getRef().setLoggerName(LOG4Z_MAIN_LOGGER_ID, "main");
-    ILog4zManager::getRef().setLoggerPath(LOG4Z_MAIN_LOGGER_ID, "./");
+    ILog4zManager::getRef().setLoggerPath(LOG4Z_MAIN_LOGGER_ID, "./log/Main");
     ILog4zManager::getRef().setLoggerOutFile(LOG4Z_MAIN_LOGGER_ID, true);
 	ILog4zManager::getRef().start();
 }

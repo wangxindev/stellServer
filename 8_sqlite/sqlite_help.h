@@ -91,7 +91,7 @@ public:
 	 @return	错误码，0为成功-1为打开数据库失败，其他看头文件..
 	 */
 
-	static int selectTable(char * dataBase, char * sql, int(*callback)(void*, int, char**, char**), char **errmsg);
+	static int selectTable(char * dataBase, char * sql, int(*callback)(void*, int, char**, char**), char **errmsg , void * param);
 	static int runSql(
 		const char * db,                                  /* An open database */
 		const char *sql,                           /* SQL to be evaluated */
