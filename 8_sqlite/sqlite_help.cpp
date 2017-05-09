@@ -63,9 +63,9 @@ int sqlite_help_one::printErrInfo(int rc, char **errinfo)
 		if (rc == SQLITE_OK)
 		{
 			if(errinfo == NULL)
-				printf("db error number£º%d\n", rc);
+				printf("db error number:%d\n", rc);
 			else
-				printf("db error number£º%d,error string:%s\n", rc, *errinfo);
+				printf("db error number:%d,error string:%s\n", rc, *errinfo);
 		}
 	}
 	return rc;

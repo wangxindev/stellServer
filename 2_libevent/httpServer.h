@@ -59,6 +59,40 @@ public:
 		}
 		return data;
 	}
+
+void sendData(evhttp_request * req, void * arg,int code, const char *reason, const char * dataBuf)
+	{
+		//创建要使用的buffer对象
+		evbuffer* buf = evbuffer_new();
+		if (!buf) {
+			return;
+		}
+		//获取请求的URI
+		const char* uri = (char*)evhttp_request_get_uri(req);
+		//添加对应的HTTP代码
+		evbuffer_add_printf(buf, dataBuf);
+		//根据URI显示不同的页面
+		//回复给客户端
+		evhttp_send_reply(req, code, reason, buf);
+		evbuffer_free(buf);
+	}
+
+	void sendOk(evhttp_request * req, void * arg)
+	{
+		std::string sendData_str = "{\"state\":\"ok\"}";
+		sendData(req, arg, HTTP_OK, "OK", sendData_str.c_str());
+	}
+
+	void send404Error(evhttp_request * req, void * arg)
+	{
+		std::string sendData_str = "<html>";
+		sendData_str.append("<head><title>HttpServer</title></head>");
+		sendData_str.append("<body>");
+		sendData_str.append("<p>404</p>");
+		sendData_str.append("</body>");
+		sendData_str.append("</html>");
+		sendData(req, arg, HTTP_NOTFOUND, "notfound", sendData_str.c_str());
+	}
 protected:
 	char *_info;//业务信息，可以理解为获得的url，业务类以此为分割点
 };

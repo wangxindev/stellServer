@@ -151,6 +151,12 @@ bool httpServer::startServer()
 
 void httpServer::send404Error(evhttp_request * req, void * arg)
 {
+	const char* uri = (char*)evhttp_request_get_uri(req);
+	if (uri != NULL)
+	{
+		std::cout << "uri:" << uri << std::endl;
+	}
+
 	//创建要使用的buffer对象
 	evbuffer* buf = evbuffer_new();
 	if (!buf) {
