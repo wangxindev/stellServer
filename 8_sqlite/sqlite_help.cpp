@@ -12,7 +12,7 @@ public:
 	std::mutex mtx;
 };
 
-int sqlite_help_one::createTable(char * dataBase, char * sql, char **errmsg)
+int sqlite_help_one::createTable(char * dataBase, string sql, char **errmsg)
 {
 	mutexHelp mtx;
 	sqlite3 *db;
@@ -21,7 +21,7 @@ int sqlite_help_one::createTable(char * dataBase, char * sql, char **errmsg)
 	return rc;
 }
 
-int sqlite_help_one::insertTable(char * dataBase, char * sql, char **errmsg)
+int sqlite_help_one::insertTable(char * dataBase, string sql, char **errmsg)
 {
 	mutexHelp mtx;
 	sqlite3 *db;
@@ -30,7 +30,7 @@ int sqlite_help_one::insertTable(char * dataBase, char * sql, char **errmsg)
 	return rc;
 }
 
-int sqlite_help_one::selectTable(char * dataBase, char * sql, int(*callback)(void*, int, char**, char**), char **errmsg, void * param)
+int sqlite_help_one::selectTable(char * dataBase, string sql, int(*callback)(void*, int, char**, char**), char **errmsg, void * param)
 {
 	mutexHelp mtx;
 	sqlite3 *db;
@@ -39,18 +39,20 @@ int sqlite_help_one::selectTable(char * dataBase, char * sql, int(*callback)(voi
 	return rc;
 }
 
-int sqlite_help_one::runSql(const char *database, const char *sql, int(*callback)(void*, int, char**, char**), void * v, char **errmsg )
+int sqlite_help_one::runSql(const char *database, string sql, int(*callback)(void*, int, char**, char**), void * v, char **errmsg)
 {
 	mutexHelp mtx;
 	sqlite3 *db;
 	int rc = sqlite3_open(database, &db);
 	if (rc == SQLITE_OK)
 	{
-		std::cout << "open db ok!" << std::endl;
-		rc = sqlite3_exec(db, sql, callback, v, errmsg);
+		rc = sqlite3_exec(db, sql.c_str(), callback, v, errmsg);
 	}
 	else
+	{
+		std::cout << "open db ok!" << std::endl;
 		rc = -1;
+	}
 	sqlite3_close(db);
 	return rc;
 }
@@ -60,9 +62,9 @@ int sqlite_help_one::printErrInfo(int rc, char **errinfo)
 	mutexHelp mtx;
 	if (rc > -1)
 	{
-		if (rc == SQLITE_OK)
+		if (rc != SQLITE_OK)
 		{
-			if(errinfo == NULL)
+			if (errinfo == NULL)
 				printf("db error number:%d\n", rc);
 			else
 				printf("db error number:%d,error string:%s\n", rc, *errinfo);

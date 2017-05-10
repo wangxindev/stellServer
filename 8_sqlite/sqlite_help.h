@@ -1,6 +1,8 @@
 #pragma once
 #ifndef _SQLITE_HELP_H_
 #define _SQLITE_HELP_H_
+#include <string>
+using std::string;
 //#define		             -1   /* open database err */
 //#define SQLITE_OK           0   /* Successful result */
 //#define SQLITE_ERROR        1   /* SQL error or missing database */
@@ -42,7 +44,7 @@ public:
 	~sqlite_help_one() {};
 
 	/**
-	 @fn	static int createTable(char * dataBase, char * sql, char **errmsg);
+	 @fn	static int createTable(char * dataBase, string sql, char **errmsg);
 	
 	 @brief	Creates a table.
 	
@@ -56,10 +58,10 @@ public:
 	 @return	错误码，0为成功-1为打开数据库失败，其他看头文件.
 	 */
 
-	static int createTable(char * dataBase, char * sql, char **errmsg);
+	static int createTable(char * dataBase, string sql, char **errmsg);
 
 	/**
-	 @fn	static int insertTable(char * dataBase, char * sql, char **errmsg);
+	 @fn	static int insertTable(char * dataBase, string sql, char **errmsg);
 	
 	 @brief	Inserts a table.
 	
@@ -73,10 +75,10 @@ public:
 	@return	错误码，0为成功-1为打开数据库失败，其他看头文件..
 	 */
 
-	static int insertTable(char * dataBase, char * sql, char **errmsg);
+	static int insertTable(char * dataBase, string sql, char **errmsg);
 
 	/**
-	 @fn	static int selectTable(char * dataBase, char * sql, int(*callback)(void*, int, char**, char**), char **errmsg);
+	 @fn	static int selectTable(char * dataBase, string sql, int(*callback)(void*, int, char**, char**), char **errmsg);
 	
 	 @brief	Select table.
 	
@@ -91,10 +93,10 @@ public:
 	 @return	错误码，0为成功-1为打开数据库失败，其他看头文件..
 	 */
 
-	static int selectTable(char * dataBase, char * sql, int(*callback)(void*, int, char**, char**), char **errmsg , void * param);
+	static int selectTable(char * dataBase, string sql, int(*callback)(void*, int, char**, char**), char **errmsg , void * param);
 	static int runSql(
 		const char * db,                                  /* An open database */
-		const char *sql,                           /* SQL to be evaluated */
+		string sql,                           /* SQL to be evaluated */
 		int(*callback)(void*, int, char**, char**),  /* Callback function */
 		void *,                                    /* 1st argument to callback */
 		char **errmsg                              /* Error msg written here */
