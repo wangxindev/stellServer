@@ -163,7 +163,7 @@ void httpServer::send404Error(evhttp_request * req, void * arg)
 		return;
 	}
 	//获取请求的URI
-	const char* uri = (char*)evhttp_request_get_uri(req);
+	//const char* uri = (char*)evhttp_request_get_uri(req);
 	//添加对应的HTTP代码
 	evbuffer_add_printf(buf, "<html>");
 	evbuffer_add_printf(buf, "<head><title>HttpServer</title></head>");
