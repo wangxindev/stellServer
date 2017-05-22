@@ -119,9 +119,9 @@ string str_util::UrlDecode(const string& str)
 	return strTemp;
 }
 
-#ifdef WIN32
 void str_util::getFiles(string _path, string _exd, vector<string>& _files)
 {
+#ifdef WIN32
 	//文件句柄
 	long   hFile = 0;
 	//文件信息
@@ -156,10 +156,40 @@ void str_util::getFiles(string _path, string _exd, vector<string>& _files)
 		} while (_findnext(hFile, &fileinfo) == 0);
 		_findclose(hFile);
 	}
+#else
+	DIR *dir;
+	struct dirent *ptr;
+	char base[1000];
+
+	if ((dir = opendir(cate_dir.c_str())) == NULL)
+	{
+		perror("Open dir error...");
+		return;
+	}
+
+	while ((ptr = readdir(dir)) != NULL)
+	{
+		if (strcmp(ptr->d_name, ".") == 0 || strcmp(ptr->d_name, "..") == 0)    ///current dir OR parrent dir  
+			continue;
+		else if (ptr->d_type == 8)    ///file  
+									  //printf("d_name:%s/%s\n",basePath,ptr->d_name);  
+			_files.push_back(ptr->d_name);
+		else if (ptr->d_type == 10)    ///link file  
+									   //printf("d_name:%s/%s\n",basePath,ptr->d_name);  
+			continue;
+		else if (ptr->d_type == 4)    ///dir  
+		{
+			_files.push_back(ptr->d_name);
+		}
+	}
+	closedir(dir);
+#endif
 }
+
 
 bool str_util::IsDirectory(const char * pDir)
 {
+#ifdef WIN32
 	char szCurPath[500];
 	ZeroMemory(szCurPath, 500);
 	sprintf_s(szCurPath, 500, "%s//*", pDir);
@@ -178,10 +208,16 @@ bool str_util::IsDirectory(const char * pDir)
 		FindClose(hFile);
 		return true;
 	}
+#else
+	struct stat st;
+	stat(pDir, &st);
+	return S_ISDIR(st.st_mode);
+#endif
 }
 
 bool str_util::DeleteDirectory(const char * DirName)
 {
+#ifdef WIN32
 	//    CFileFind tempFind;        //声明一个CFileFind类变量，以用来搜索
 	char szCurPath[MAX_PATH];        //用于定义搜索格式
 	_snprintf(szCurPath, MAX_PATH, "%s//*.*", DirName);    //匹配格式为*.*,即该目录下的所有文件
@@ -216,10 +252,15 @@ bool str_util::DeleteDirectory(const char * DirName)
 		return false;
 	}
 	return true;
+#else
+	string remove_cmd = "rm -rf " + DirName;
+	system(remove_cmd.c_str());
+#endif
 }
 
 string str_util::getName_byPath(const char * _path)
 {
+#ifdef WIN32
 	string filename;
 	char szDrive[_MAX_DRIVE];   //磁盘名
 	char szDir[_MAX_DIR];       //路径名
@@ -228,6 +269,10 @@ string str_util::getName_byPath(const char * _path)
 	_splitpath(_path, szDrive, szDir, szFname, szExt); //分解路径
 	filename.append(szFname);
 	return filename;
+#else
+	string path(_path);
+	int pos = path.find_last_of('/');
+	string filename(path.substr(pos + 1));
+#endif
 }
 
-#endif

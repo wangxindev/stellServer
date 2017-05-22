@@ -11,6 +11,9 @@
 #include"windows.h"
 #include <assert.h>
 #else
+#include <unistd.h>  
+#include <dirent.h>  
+#include <sys/stat.h>
 #endif
 
 using std::string;
@@ -100,7 +103,6 @@ public:
 
 	static string UrlDecode(const string& str);
 
-#ifdef WIN32
 
 	/**
 	 @fn	void getFiles(std::string _path, std::string _exd, std::vector<std::string>& _files)
@@ -161,8 +163,6 @@ public:
 	 */
 
 	static string getName_byPath(const char * _path);
-#else
-#endif
 
 };
 
