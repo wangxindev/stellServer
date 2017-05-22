@@ -119,8 +119,8 @@ int EasyCurl::http_post(const string & strUrl, const string & strParam, string &
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, true);
 		curl_easy_setopt(curl, CURLOPT_CAINFO, pCaPath);
 	}
-	curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 3);
-	curl_easy_setopt(curl, CURLOPT_TIMEOUT, 3);
+	curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 30);
+	curl_easy_setopt(curl, CURLOPT_TIMEOUT, 30);
 	res = curl_easy_perform(curl);
 	curl_easy_cleanup(curl);
 	return res;
@@ -154,8 +154,8 @@ int EasyCurl::http_get(const string & strUrl, string & strResponse, const char *
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, true);
 		curl_easy_setopt(curl, CURLOPT_CAINFO, pCaPath);
 	}
-	curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 3);
-	curl_easy_setopt(curl, CURLOPT_TIMEOUT, 3);
+	curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 30);
+	curl_easy_setopt(curl, CURLOPT_TIMEOUT, 30);
 	res = curl_easy_perform(curl);
 	curl_easy_cleanup(curl);
 	return res;
