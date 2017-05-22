@@ -5,8 +5,7 @@ void logicHttpGetJson::logic_run(struct evhttp_request * req, void * userData)
 	string logic;
 	{//logic用来区分不同的业务，也用来建数据库存储对应的数据库名，表名
 		logic = logicBase::getHttpHeadParam("logic", req);
-		sprintf(getLogEmptyBuf(), "logic:\n%s", logic.c_str());
-		LOGI("info", getLogCStr());
+		LOGIS("info", "logic:\n%s\n", logic.c_str());
 	}
 
 	string json;
@@ -17,8 +16,7 @@ void logicHttpGetJson::logic_run(struct evhttp_request * req, void * userData)
 		const char json_cstr[] = " {\"hello\" : \"'world'\", \"t\" : true , \"f\" : false, \"n\": null, \"i\":123, \"pi\": 3.1416, \"arr\":[{\"age\":1},{\"age\":2},{\"age2\":3}] ,\"hello\" : \"world\"}";
 		json = json_cstr;
 
-		sprintf(getLogEmptyBuf(), "httpBody:\n%s", json.c_str());
-		LOGI("info", getLogCStr());
+		LOGIS("info", "httpBody:\n%s\n", json.c_str());
 		try
 		{
 			jsonHelp jH(json.c_str(), logic.c_str());
