@@ -15,7 +15,6 @@
 #include "rapidjson/prettywriter.h" // for stringify JSON
 #include "jsonHelp.h"
 #include <lua.hpp>
-#include "loginit.h"
 
 #include <iostream>
 #include <string>

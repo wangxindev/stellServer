@@ -1940,3 +1940,4 @@ ILog4zManager * ILog4zManager::getInstance()
 
 _ZSUMMER_LOG4Z_END
 _ZSUMMER_END
+

@@ -11,14 +11,10 @@ int main(void)
 	int backlog = 10240;
 	char addr[] = "0.0.0.0";
 
-	sprintf(getLogEmptyBuf(), "port:%d\n", port);
-	LOGI("main", getLogCStr());
+	LOGIS("main", "port:%d\n", port);
+	LOGIS("main", "nthread:%d\n", nthread);
+	LOGIS("main", "backlog:%d\n", backlog);
 
-	sprintf(getLogEmptyBuf(), "nthread:%d\n", nthread);
-	LOGI("main", getLogCStr());
-
-	sprintf(getLogEmptyBuf(), "backlog:%d\n", backlog);
-	LOGI("main", getLogCStr());
 	logicHttpGetJson pushJsonToServer("interfaceSendOriginalData");
 	logicHttpSendJson sendJsonToUser("interfaceGetObjectData");
 

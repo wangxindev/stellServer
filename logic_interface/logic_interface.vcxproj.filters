@@ -95,9 +95,6 @@
     <ClInclude Include="global.h">
       <Filter>SRC</Filter>
     </ClInclude>
-    <ClInclude Include="loginit.h">
-      <Filter>SRC</Filter>
-    </ClInclude>
     <ClInclude Include="logicHttpGetJson.h">
       <Filter>LOGIC</Filter>
     </ClInclude>

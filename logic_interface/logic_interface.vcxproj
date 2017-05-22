@@ -295,7 +295,6 @@
     <ClInclude Include="global.h" />
     <ClInclude Include="logicHttpGetJson.h" />
     <ClInclude Include="logicHttpSendJson.h" />
-    <ClInclude Include="loginit.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
