@@ -11,9 +11,9 @@ int main(void)
 	int backlog = 10240;
 	char addr[] = "0.0.0.0";
 
-	LOGIS("main", "port:%d\n", port);
-	LOGIS("main", "nthread:%d\n", nthread);
-	LOGIS("main", "backlog:%d\n", backlog);
+	LOG_I_S("main", "port:%d\n", port);
+	LOG_I_S("main", "nthread:%d\n", nthread);
+	LOG_I_S("main", "backlog:%d\n", backlog);
 
 	logicHttpGetJson pushJsonToServer("interfaceSendOriginalData");
 	logicHttpSendJson sendJsonToUser("interfaceGetObjectData");

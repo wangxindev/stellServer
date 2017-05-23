@@ -54,13 +54,13 @@ private:
 	logHelp::getRef()->logOut(level,name,logData,__FILE__,__LINE__)
 
 
-#define LOGT( _logName,_logData ) LOGOUT(TRACE_E,_logName,_logData)
-#define LOGD( _logName,_logData ) LOGOUT(DEBUG_E,_logName,_logData)
-#define LOGI( _logName,_logData ) LOGOUT(INFO_E,_logName,_logData)
-#define LOGW( _logName,_logData ) LOGOUT(WARN_E,_logName,_logData)
-#define LOGE( _logName,_logData ) LOGOUT(ERROR_E,_logName,_logData)
-#define LOGA( _logName,_logData ) LOGOUT(ALARM_E,_logName,_logData)
-#define LOGF( _logName,_logData ) LOGOUT(FATAL_E,_logName,_logData)
+#define LOG_T( _logName,_logData ) LOGOUT(TRACE_E,_logName,_logData)
+#define LOG_D( _logName,_logData ) LOGOUT(DEBUG_E,_logName,_logData)
+#define LOG_I( _logName,_logData ) LOGOUT(INFO_E,_logName,_logData)
+#define LOG_W( _logName,_logData ) LOGOUT(WARN_E,_logName,_logData)
+#define LOG_E( _logName,_logData ) LOGOUT(ERROR_E,_logName,_logData)
+#define LOG_A( _logName,_logData ) LOGOUT(ALARM_E,_logName,_logData)
+#define LOG_F( _logName,_logData ) LOGOUT(FATAL_E,_logName,_logData)
 
 static char *logB = new char[10240];
 static std::mutex mtx_logBuf;
@@ -97,10 +97,10 @@ public:
 		logHelp::getRef()->createLog(logErr);
 		logHelp::getRef()->createLog(logWarn);
 		logHelp::getRef()->createLog(logInfo);
-		LOGI("main", "initd\n");
-		LOGE("err", "initd\n");
-		LOGW("warn", "initd\n");
-		LOGI("info", "initd\n");
+		LOG_I("main", "initd\n");
+		LOG_E("err", "initd\n");
+		LOG_W("warn", "initd\n");
+		LOG_I("info", "initd\n");
 	}
 };
 
@@ -113,12 +113,12 @@ public:
 	sprintf(getLogEmptyBuf(),_logData, iparam), \
 	 LOGOUT(log_lerver,_logName,getLogCStr())\
 
-#define LOGTS( _logName,_logData, iparam ) LOG_S(_logName, _logData, iparam, TRACE_E)
-#define LOGDS( _logName,_logData, iparam ) LOG_S(_logName, _logData, iparam, DEBUG_E)
-#define LOGIS( _logName,_logData, iparam ) LOG_S(_logName, _logData, iparam, INFO_E)
-#define LOGWS( _logName,_logData, iparam ) LOG_S(_logName, _logData, iparam, WARN_E)
-#define LOGES( _logName,_logData, iparam ) LOG_S(_logName, _logData, iparam, ERROR_E)
-#define LOGAS( _logName,_logData, iparam ) LOG_S(_logName, _logData, iparam, ALARM_E)
-#define LOGFS( _logName,_logData, iparam ) LOG_S(_logName, _logData, iparam, FATAL_E)
+#define LOG_T_S( _logName,_logData, iparam ) LOG_S(_logName, _logData, iparam, TRACE_E)
+#define LOG_D_S( _logName,_logData, iparam ) LOG_S(_logName, _logData, iparam, DEBUG_E)
+#define LOG_I_S( _logName,_logData, iparam ) LOG_S(_logName, _logData, iparam, INFO_E)
+#define LOG_W_S( _logName,_logData, iparam ) LOG_S(_logName, _logData, iparam, WARN_E)
+#define LOG_E_S( _logName,_logData, iparam ) LOG_S(_logName, _logData, iparam, ERROR_E)
+#define LOG_A_S( _logName,_logData, iparam ) LOG_S(_logName, _logData, iparam, ALARM_E)
+#define LOG_F_S( _logName,_logData, iparam ) LOG_S(_logName, _logData, iparam, FATAL_E)
 
 #endif
