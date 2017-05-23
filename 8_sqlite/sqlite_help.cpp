@@ -9,7 +9,6 @@ std::mutex sqlite_mtx;
 int sqlite_help_one::createTable(char * dataBase, string sql, char **errmsg)
 {
 	sqlite_mtx.lock();
-	sqlite3 *db;
 	int rc = runSql(dataBase, sql, NULL, NULL, errmsg);
 	printErrInfo(rc, errmsg);
 	sqlite_mtx.unlock();
@@ -19,7 +18,6 @@ int sqlite_help_one::createTable(char * dataBase, string sql, char **errmsg)
 int sqlite_help_one::insertTable(char * dataBase, string sql, char **errmsg)
 {
 	sqlite_mtx.lock();
-	sqlite3 *db;
 	int rc = runSql(dataBase, sql, NULL, NULL, errmsg);
 	printErrInfo(rc, errmsg);
 	sqlite_mtx.unlock();
@@ -29,7 +27,6 @@ int sqlite_help_one::insertTable(char * dataBase, string sql, char **errmsg)
 int sqlite_help_one::selectTable(char * dataBase, string sql, int(*callback)(void*, int, char**, char**), char **errmsg, void * param)
 {
 	sqlite_mtx.lock();
-	sqlite3 *db;
 	int rc = runSql(dataBase, sql, callback, param, errmsg);
 	printErrInfo(rc, errmsg);
 	sqlite_mtx.unlock();
