@@ -58,7 +58,7 @@ public:
 	 @return	错误码，0为成功-1为打开数据库失败，其他看头文件.
 	 */
 
-	static int createTable(char * dataBase, string sql, char **errmsg);
+	static int createTable(const char * dataBase, string sql, char **errmsg);
 
 	/**
 	 @fn	static int insertTable(char * dataBase, string sql, char **errmsg);
@@ -75,7 +75,7 @@ public:
 	@return	错误码，0为成功-1为打开数据库失败，其他看头文件..
 	 */
 
-	static int insertTable(char * dataBase, string sql, char **errmsg);
+	static int insertTable(const char * dataBase, string sql, char **errmsg);
 
 	/**
 	 @fn	static int selectTable(char * dataBase, string sql, int(*callback)(void*, int, char**, char**), char **errmsg);
@@ -93,7 +93,7 @@ public:
 	 @return	错误码，0为成功-1为打开数据库失败，其他看头文件..
 	 */
 
-	static int selectTable(char * dataBase, string sql, int(*callback)(void*, int, char**, char**), char **errmsg , void * param);
+	static int selectTable(const char * dataBase, string sql, int(*callback)(void*, int, char**, char**), char **errmsg , void * param);
 	static int runSql(
 		const char * db,                                  /* An open database */
 		string sql,                           /* SQL to be evaluated */
