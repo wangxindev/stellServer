@@ -108,26 +108,19 @@ public:
 #define getLogCStr() logBuf::getLogBuf().c_str() 
 #define logInit() logBuf::logConfigInit()
 
-#define LOGTS( _logName,_logData, iparam ) \
+
+#define LOG_S( _logName,_logData, iparam ,log_lerver) \
+{\
 	sprintf(getLogEmptyBuf(),_logData, iparam); \
-	 LOGOUT(TRACE_E,_logName,getLogCStr())
-#define LOGDS( _logName,_logData, iparam ) \
-	sprintf(getLogEmptyBuf(),_logData, iparam); \
-	LOGOUT(DEBUG_E,_logName,getLogCStr())
-#define LOGIS( _logName,_logData, iparam ) \
-	sprintf(getLogEmptyBuf(),_logData, iparam); \
-	LOGOUT(INFO_E,_logName,getLogCStr())
-#define LOGWS( _logName,_logData, iparam ) \
-	sprintf(getLogEmptyBuf(),_logData, iparam); \
-	LOGOUT(WARN_E,_logName,getLogCStr())
-#define LOGES( _logName,_logData, iparam ) \
-	sprintf(getLogEmptyBuf(),_logData, iparam); \
-	LOGOUT(ERROR_E,_logName,getLogCStr())
-#define LOGAS( _logName,_logData, iparam ) \
-	sprintf(getLogEmptyBuf(),_logData, iparam); \
-	LOGOUT(ALARM_E,_logName,getLogCStr())
-#define LOGFS( _logName,_logData, iparam ) \
-	sprintf(getLogEmptyBuf(),_logData, iparam); \
-	LOGOUT(FATAL_E,_logName,getLogCStr())
+	 LOGOUT(log_lerver,_logName,getLogCStr())\
+}
+
+#define LOGTS( _logName,_logData, iparam ) LOG_S(_logName, _logData, iparam, TRACE_E)
+#define LOGDS( _logName,_logData, iparam ) LOG_S(_logName, _logData, iparam, DEBUG_E)
+#define LOGIS( _logName,_logData, iparam ) LOG_S(_logName, _logData, iparam, INFO_E)
+#define LOGWS( _logName,_logData, iparam ) LOG_S(_logName, _logData, iparam, WARN_E)
+#define LOGES( _logName,_logData, iparam ) LOG_S(_logName, _logData, iparam, ERROR_E)
+#define LOGAS( _logName,_logData, iparam ) LOG_S(_logName, _logData, iparam, ALARM_E)
+#define LOGFS( _logName,_logData, iparam ) LOG_S(_logName, _logData, iparam, FATAL_E)
 
 #endif
