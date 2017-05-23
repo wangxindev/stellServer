@@ -109,16 +109,16 @@ public:
 #define logInit() logBuf::logConfigInit()
 
 
-#define LOG_S( _logName,_logData, iparam ,log_lerver) \
-	sprintf(getLogEmptyBuf(),_logData, iparam), \
+#define LOG_S( _logName,_logData, log_lerver, ...) \
+	sprintf(getLogEmptyBuf(),_logData, __VA_ARGS__), \
 	 LOGOUT(log_lerver,_logName,getLogCStr())\
 
-#define LOG_T_S( _logName,_logData, iparam ) LOG_S(_logName, _logData, iparam, TRACE_E)
-#define LOG_D_S( _logName,_logData, iparam ) LOG_S(_logName, _logData, iparam, DEBUG_E)
-#define LOG_I_S( _logName,_logData, iparam ) LOG_S(_logName, _logData, iparam, INFO_E)
-#define LOG_W_S( _logName,_logData, iparam ) LOG_S(_logName, _logData, iparam, WARN_E)
-#define LOG_E_S( _logName,_logData, iparam ) LOG_S(_logName, _logData, iparam, ERROR_E)
-#define LOG_A_S( _logName,_logData, iparam ) LOG_S(_logName, _logData, iparam, ALARM_E)
-#define LOG_F_S( _logName,_logData, iparam ) LOG_S(_logName, _logData, iparam, FATAL_E)
+#define LOG_T_S( _logName,_logData, ... ) LOG_S(_logName, _logData, TRACE_E, __VA_ARGS__)
+#define LOG_D_S( _logName,_logData, ... ) LOG_S(_logName, _logData, DEBUG_E, __VA_ARGS__)
+#define LOG_I_S( _logName,_logData, ... ) LOG_S(_logName, _logData, INFO_E , __VA_ARGS__)
+#define LOG_W_S( _logName,_logData, ... ) LOG_S(_logName, _logData, WARN_E , __VA_ARGS__)
+#define LOG_E_S( _logName,_logData, ... ) LOG_S(_logName, _logData, ERROR_E, __VA_ARGS__)
+#define LOG_A_S( _logName,_logData, ... ) LOG_S(_logName, _logData, ALARM_E, __VA_ARGS__)
+#define LOG_F_S( _logName,_logData, ... ) LOG_S(_logName, _logData, FATAL_E, __VA_ARGS__)
 
 #endif
