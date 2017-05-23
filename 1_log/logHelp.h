@@ -51,7 +51,7 @@ private:
 };
 
 #define LOGOUT(level, name, logData) \
-logHelp::getRef()->logOut(level,name,logData,__FILE__,__LINE__);
+	logHelp::getRef()->logOut(level,name,logData,__FILE__,__LINE__)
 
 
 #define LOGT( _logName,_logData ) LOGOUT(TRACE_E,_logName,_logData)
@@ -110,10 +110,8 @@ public:
 
 
 #define LOG_S( _logName,_logData, iparam ,log_lerver) \
-{\
-	sprintf(getLogEmptyBuf(),_logData, iparam); \
+	sprintf(getLogEmptyBuf(),_logData, iparam), \
 	 LOGOUT(log_lerver,_logName,getLogCStr())\
-}
 
 #define LOGTS( _logName,_logData, iparam ) LOG_S(_logName, _logData, iparam, TRACE_E)
 #define LOGDS( _logName,_logData, iparam ) LOG_S(_logName, _logData, iparam, DEBUG_E)
