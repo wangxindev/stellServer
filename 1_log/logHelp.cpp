@@ -1,7 +1,7 @@
 
 #include "logHelp.h"
 #include "log4z.h"
-
+static std::mutex mtx_log_new_instance_1;
 using namespace zsummer::log4z;
 
 logHelp * logHelp::instance_  = NULL;
@@ -93,6 +93,11 @@ void logHelp::logOut(ENUM_LOG_LEVEL2 _level, const char * _name, const char * _l
 logHelp * logHelp::getRef()
 {
 	if (!instance_)
-		instance_ = new logHelp;
+	{
+		mtx_log_new_instance_1.lock();
+		if(!instance_)
+			instance_ = new logHelp;
+		mtx_log_new_instance_1.unlock();
+	}
 	return instance_;
 }
