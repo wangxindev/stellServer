@@ -6,10 +6,12 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <assert.h>
+#include <string.h>
+#include <stdio.h>
 #ifdef WIN32
 #include <io.h>
 #include"windows.h"
-#include <assert.h>
 #else
 #include <unistd.h>  
 #include <dirent.h>  
