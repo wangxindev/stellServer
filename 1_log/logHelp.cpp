@@ -46,6 +46,7 @@ void logHelp::starLog(bool _on)
 
 void logHelp::logOut(ENUM_LOG_LEVEL2 _level, const char * _name, const char * _logData, const char * _file, const int _line)
 {
+	printf("\n");
 	LoggerId id = -1;
 	std::vector < std::pair < std::string,LoggerId> >::iterator iter = logIdList_.begin();
 	for (;iter != logIdList_.end(); ++iter)
