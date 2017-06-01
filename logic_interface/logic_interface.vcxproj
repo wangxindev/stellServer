@@ -275,6 +275,7 @@
     <ClCompile Include="..\4_rapidjson\jsonHelp.cpp" />
     <ClCompile Include="..\6_userPermissionsMgr\userPermissionsMgr.cpp" />
     <ClCompile Include="..\7_util\str_util.cpp" />
+    <ClCompile Include="..\7_util\threadPool_util.cpp" />
     <ClCompile Include="..\8_sqlite\sqlite_help.cpp" />
     <ClCompile Include="logicHttpGetJson.cpp" />
     <ClCompile Include="logicHttpSendJson.cpp" />
@@ -291,6 +292,7 @@
     <ClInclude Include="..\7_util\http_util.h" />
     <ClInclude Include="..\7_util\mutex.h" />
     <ClInclude Include="..\7_util\str_util.h" />
+    <ClInclude Include="..\7_util\threadPool_util.h" />
     <ClInclude Include="..\8_sqlite\sqlite_help.h" />
     <ClInclude Include="global.h" />
     <ClInclude Include="logicHttpGetJson.h" />

@@ -16,8 +16,12 @@ void threadWrapper::setRunFun(pRunCall runCall, void *data)
 	pRunCallBack = runCall;
 	bRun = true;
 	_pool->run1th(this);
+	cv.notify_all();
 	if (th == NULL)
+	{
 		th = new thread(&threadWrapper::thRunCallBack, this, data);
+		th->detach();
+	}
 }
 
 void threadWrapper::deleteSelf()
@@ -39,6 +43,8 @@ void threadWrapper::thRunCallBack(void * data)
 			pRunCallBack(data);
 			bRun = false;
 			_pool->stop1th(this);
+			std::unique_lock<mutex> ulock(m);
+			cv.wait(ulock);
 		}
 	}
 }
@@ -55,6 +61,8 @@ threadPool_util::threadPool_util()
 
 threadPool_util::~threadPool_util()
 {
+	whileTh = new thread(&threadPool_util::whileRun, _instance);
+	whileTh->detach();
 }
 
 void threadPool_util::init(int thCount)
@@ -113,7 +121,6 @@ threadPool_util* threadPool_util::getInstance()
 		if (!_instance)
 		{
 			_instance = new threadPool_util;
-			whileTh = new thread(&threadPool_util::whileRun, this);
 		}
 		mtx_thread_pool_new_instance.unlock();
 	}

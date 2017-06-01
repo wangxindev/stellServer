@@ -60,6 +60,9 @@
     <ClCompile Include="..\4_rapidjson\jsonHelp.cpp">
       <Filter>CPP</Filter>
     </ClCompile>
+    <ClCompile Include="..\7_util\threadPool_util.cpp">
+      <Filter>CPP</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\3_libcurl\EasyCurl.h">
@@ -102,6 +105,9 @@
       <Filter>LOGIC</Filter>
     </ClInclude>
     <ClInclude Include="..\4_rapidjson\jsonHelp.h">
+      <Filter>HPP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\7_util\threadPool_util.h">
       <Filter>HPP</Filter>
     </ClInclude>
   </ItemGroup>

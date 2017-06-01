@@ -3,6 +3,7 @@
 #pragma once
 #include <thread>
 #include <mutex>
+#include <condition_variable>
 #include <functional>
 #include <list>
 using std::list;
@@ -31,6 +32,8 @@ private:
 	bool bDeleteSelf;
 
 	threadPool_util* _pool;
+	mutex m;
+	std::condition_variable cv;
 };
 
 typedef struct fun_warpper
@@ -61,7 +64,7 @@ public:
 
 	void runLogic(pRunCall callback, void*data = NULL);
 
-	threadPool_util* getInstance();
+	static threadPool_util* getInstance();
 	
 
 private:
@@ -82,5 +85,32 @@ private:
 
 	thread * whileTh;
 };
+
+/**
+ @def	thread_pool_init(thread_count)
+
+ @brief	初始化线程池数量
+
+ @author	wangxin
+ @date	2017/6/1
+
+ @param	thread_count	Number of threads.
+ */
+
+#define thread_pool_init(thread_count) threadPool_util::getInstance()->init(thread_count)
+
+/**
+ @def	thread_pool_get_one_thread(callback, userData)
+
+ @brief	从线程池中获取一个线程执行任务
+
+ @author	wangxin
+ @date	2017/6/1
+
+ @param	callback	一个void（void*）的回调函数.
+ @param	userData	用户参数，会传递给回调函数
+ */
+
+#define thread_pool_get_one_thread(callback, userData) threadPool_util::getInstance()->runLogic(callback, userData)
 
 #endif

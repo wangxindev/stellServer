@@ -5,6 +5,7 @@
 int main(void)
 {
 	logInit();
+	thread_pool_init(16);
 
 	int port = 3355;
 	int nthread = 10;

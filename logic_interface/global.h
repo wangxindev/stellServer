@@ -9,6 +9,7 @@
 #include "../7_util/http_util.h"
 #include "../7_util/mutex.h"
 #include "../7_util/str_util.h"
+#include "../7_util/threadPool_util.h"
 #include "../8_sqlite/sqlite_help.h"
 
 #include "rapidjson/document.h"     // rapidjson's DOM-style API
