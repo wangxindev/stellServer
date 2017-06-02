@@ -1,7 +1,11 @@
 #include "threadPool_util.h"
+#include <iostream>
 
 
 static std::mutex mtx_thread_pool_new_instance;
+std::mutex mtx_thread_pool_list;
+std::mutex mtx_thread_pool_main;
+std::mutex mtx_thread_pool_while;
 threadWrapper::threadWrapper(threadPool_util* pool)
 {
 	_pool = pool;
@@ -14,12 +18,12 @@ threadWrapper::threadWrapper(threadPool_util* pool)
 void threadWrapper::setRunFun(pRunCall runCall, void *data)
 {
 	pRunCallBack = runCall;
-	bRun = true;
-	_pool->run1th(this);
+	this->data = data;
+	//std::cout << "thread id :" << std::this_thread::get_id() << " data=" << *(int*)data << std::endl;
 	cv.notify_all();
 	if (th == NULL)
 	{
-		th = new thread(&threadWrapper::thRunCallBack, this, data);
+		th = new thread(&threadWrapper::thRunCallBack, this);
 		th->detach();
 	}
 }
@@ -29,23 +33,14 @@ void threadWrapper::deleteSelf()
 	bDeleteSelf = true;
 }
 
-bool threadWrapper::isRun()
-{
-	return bRun;
-}
-
-void threadWrapper::thRunCallBack(void * data)
+void threadWrapper::thRunCallBack()
 {
 	while (!bDeleteSelf)
 	{
-		while (bRun)
-		{
-			pRunCallBack(data);
-			bRun = false;
-			_pool->stop1th(this);
-			std::unique_lock<mutex> ulock(m);
-			cv.wait(ulock);
-		}
+		pRunCallBack(data);
+		_pool->stop1th(this);
+		std::unique_lock<mutex> ulock(m);
+		cv.wait(ulock);
 	}
 }
 
@@ -57,16 +52,23 @@ threadPool_util::threadPool_util()
 {
 	_thCount = 0;
 	_runThCount = 0;
+
 }
 
 threadPool_util::~threadPool_util()
 {
-	whileTh = new thread(&threadPool_util::whileRun, _instance);
-	whileTh->detach();
 }
 
 void threadPool_util::init(int thCount)
 {
+	static bool bone = true;
+	if (bone && _instance != NULL)
+	{
+		bone = false;
+		whileTh = new thread(&threadPool_util::whileRun, _instance);
+		whileTh->detach();
+	}
+
 	this->_thCount = thCount;
 	int th_count = _thList.size();
 	if (thCount >= th_count)
@@ -81,28 +83,34 @@ void threadPool_util::init(int thCount)
 		for (; deleteCount > 0; --deleteCount)
 		{
 			threadWrapper* th;
-			if (!_thList.empty())
+			if (_thList.size() > 0)
 			{
-				th = _thList.back();
-				_thList.pop_back();
+				if (th = back(false))
+					pop_back(false);
 			}
 			else
 			{
-				th = _thRunList.back();
-				_thList.pop_back();
+				if (th = back(true))
+					pop_back(true);
 			}
-			th->deleteSelf();
+			if (th)
+				th->deleteSelf();
 		}
 	}
 }
 
 void threadPool_util::runLogic(pRunCall callback, void*data)
 {
+	mtx_thread_pool_main.lock();
+	cv.notify_all();
 	threadWrapper* th;
-	if (!_thList.empty())
+	if (_thList.size() > 0)
 	{
-		th = _thList.front();
-		th->setRunFun(callback, data);
+		if (th = front(false))
+		{
+			run1th(th);
+			th->setRunFun(callback, data);
+		}
 	}
 	else
 	{
@@ -111,6 +119,7 @@ void threadPool_util::runLogic(pRunCall callback, void*data)
 		funWT.data = data;
 		_logicList.push_back(funWT);
 	}
+	mtx_thread_pool_main.unlock();
 }
 
 threadPool_util* threadPool_util::getInstance()
@@ -130,27 +139,134 @@ threadPool_util* threadPool_util::getInstance()
 void threadPool_util::run1th(threadWrapper* th)
 {
 	_thRunList.push_back(th);
-	_thList.remove(th);
+	remove(false, th);
 }
 
 void threadPool_util::stop1th(threadWrapper* th)
 {
+	remove(true, th);
 	_thList.push_back(th);
-	_thRunList.remove(th);
+	cv.notify_all();
+}
+
+void threadPool_util::pop_back(bool isRunList)
+{
+	lock(__LINE__);
+	if (isRunList)
+		_thRunList.pop_back();
+	else
+		_thList.pop_back();
+	unlock(__LINE__);
+}
+
+void threadPool_util::pop_front(bool isRunList)
+{
+	mtx_thread_pool_list.lock();
+	lock(__LINE__);
+	if (isRunList)
+		_thRunList.pop_front();
+	else
+		_thList.pop_front();
+	unlock(__LINE__);
+}
+
+void threadPool_util::remove(bool isRunList, threadWrapper* th)
+{
+	lock(__LINE__);
+	if (isRunList)
+		_thRunList.remove(th);
+	else
+		_thList.remove(th);
+	unlock(__LINE__);
+}
+
+threadWrapper* threadPool_util::front(bool isRunList)
+{
+	lock(__LINE__);
+	if (isRunList)
+	{
+		if (_thRunList.size() > 0)
+		{
+			unlock(__LINE__);
+			return _thRunList.front();
+		}
+	}
+	else
+	{
+		if (_thList.size() > 0)
+		{
+			unlock(__LINE__);
+			return _thList.front();
+		}
+	}
+	unlock(__LINE__);
+	return NULL;
+}
+
+threadWrapper* threadPool_util::back(bool isRunList)
+{
+	lock(__LINE__);
+	if (isRunList)
+	{
+		if (_thRunList.size() > 0)
+		{
+			unlock(__LINE__);
+			return _thRunList.back();
+		}
+	}
+	else
+	{
+		if (_thList.size() > 0)
+		{
+			unlock(__LINE__);
+			return _thList.back();
+		}
+	}
+	return NULL;
+}
+
+void threadPool_util::lock(int line)
+{
+#if 0
+	if (line != -1)
+		std::cout << "lock   :" << line << " ->thread id :"<< std::this_thread::get_id() << std::endl;
+#endif
+	mtx_thread_pool_list.lock();
+}
+
+void threadPool_util::unlock(int line)
+{
+#if 0
+	if (line != -1)
+		std::cout << "unlock   :" << line << " ->thread id :"<< std::this_thread::get_id() << std::endl;
+#endif
+	mtx_thread_pool_list.unlock();
 }
 
 void threadPool_util::whileRun()
 {
 	while (true)
 	{
-		if (!_thList.empty() && !_logicList.empty())
+		mtx_thread_pool_while.lock();
+		if (_instance!= NULL && _thList.size() > 0 && _logicList.size() > 0)
 		{
-			threadWrapper* th;
-			th = _thList.front();
-			fun_w_t funWT = _logicList.back();
-			th->setRunFun(funWT.callback, funWT.data);
-			_logicList.pop_back();
+			int num = _logicList.size();
+			//printf("logic size = %d\n", num);
+			threadWrapper* th = NULL;
+			if(th = front(false))
+			{
+				fun_w_t funWT = _logicList.front();
+				run1th(th);
+				th->setRunFun(funWT.callback, funWT.data);
+				_logicList.pop_front();
+			}
 		}
+		else
+		{
+			std::unique_lock<mutex> ulock(m);
+			cv.wait(ulock);
+		}
+		mtx_thread_pool_while.unlock();
 	}
 }
 

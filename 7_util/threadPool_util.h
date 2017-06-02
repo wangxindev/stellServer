@@ -19,13 +19,13 @@ public:
 	threadWrapper(threadPool_util* pool);
 	void setRunFun(pRunCall runCall, void* data);
 	void deleteSelf();
-	bool isRun();
 
 private:
-	void thRunCallBack(void * data);
+	void thRunCallBack();
 private:
 
 	pRunCall pRunCallBack;
+	void * data;
 	thread * th;
 	bool bRun;
 
@@ -72,6 +72,16 @@ private:
 
 	void run1th(threadWrapper* th);
 	void stop1th(threadWrapper* th);
+
+	void pop_back(bool isRunList);
+	void pop_front(bool isRunList);
+	void remove(bool isRunList, threadWrapper* th);
+	threadWrapper* front(bool isRunList);
+	threadWrapper* back(bool isRunList);
+
+	void lock(int line = -1);
+	void unlock(int line = -1);
+
 	void whileRun();
 
 	list<fun_w_t> _logicList;
@@ -84,6 +94,9 @@ private:
 	static threadPool_util* _instance;
 
 	thread * whileTh;
+
+	mutex m;
+	std::condition_variable cv;
 };
 
 /**

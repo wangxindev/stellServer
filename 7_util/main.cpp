@@ -2,24 +2,36 @@
 #include "http_util.h"
 #include "threadPool_util.h"
 #include <windows.h>
+#include <mutex>
+#include <random>
+#include <time.h>
+using std::mutex;
 
 using namespace std;
 typedef std::function<void(void*)> pRunCall;
-void callbk(void *)
+mutex mtx;
+static unsigned int num = 0;
+void callbk(void * data)
 {
-	cout << "haha" << endl;
-	cout << std::this_thread::get_id() << endl;
+	int count = rand() % 10000;
+	int a = 0;
+	for (int i = 0; i < count; ++i)
+		a = a + i;
+	cout << "num=" << num++ << " index:" << *(int*)data << " thread id:" << std::this_thread::get_id() << " a=" << a  << " count=" << count << endl;
 }
 int main(void)
 {
+	srand((unsigned)time(0));
+	cout << "main thread id : " << std::this_thread::get_id() << endl;
 
-	threadPool_util::getInstance()->init(4);
-	while (true)
+	thread_pool_init(8);
+	for (static int i = 0; i < 1000; ++i)
 	{
-		threadPool_util::getInstance()->runLogic(callbk);
-		Sleep(1000);
+		thread_pool_get_one_thread(callbk, new int(i));
+		//Sleep(100);
 	}
 
-	system("pause");
+	getchar();
+	//system("pause");
 	return 0;
 }
