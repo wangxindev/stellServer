@@ -14,12 +14,11 @@ threadWrapper::threadWrapper(threadPool_util* pool)
 	bDeleteSelf = false;
 }
 
-
 void threadWrapper::setRunFun(pRunCall runCall, void *data)
 {
+	bRun = true;
 	pRunCallBack = runCall;
 	this->data = data;
-	//std::cout << "thread id :" << std::this_thread::get_id() << " data=" << *(int*)data << std::endl;
 	cv.notify_all();
 	if (th == NULL)
 	{
@@ -33,12 +32,20 @@ void threadWrapper::deleteSelf()
 	bDeleteSelf = true;
 }
 
+bool threadWrapper::isRun()
+{
+	return bRun;
+}
+
 void threadWrapper::thRunCallBack()
 {
 	while (!bDeleteSelf)
 	{
+		static int in = 0;
+		//std::cout << "self: " << in++ << std::endl;
 		pRunCallBack(data);
-		_pool->stop1th(this);
+		bRun = false;
+		_pool->stop1th();
 		std::unique_lock<mutex> ulock(m);
 		cv.wait(ulock);
 	}
@@ -52,6 +59,7 @@ threadPool_util::threadPool_util()
 {
 	_thCount = 0;
 	_runThCount = 0;
+	_thNoRunSize = 0;
 
 }
 
@@ -61,6 +69,7 @@ threadPool_util::~threadPool_util()
 
 void threadPool_util::init(int thCount)
 {
+	_thNoRunSize = thCount;
 	static bool bone = true;
 	if (bone && _instance != NULL)
 	{
@@ -85,13 +94,13 @@ void threadPool_util::init(int thCount)
 			threadWrapper* th;
 			if (_thList.size() > 0)
 			{
-				if (th = back(false))
-					pop_back(false);
+				if (th = back())
+					pop_back();
 			}
 			else
 			{
-				if (th = back(true))
-					pop_back(true);
+				if (th = back())
+					pop_back();
 			}
 			if (th)
 				th->deleteSelf();
@@ -104,11 +113,11 @@ void threadPool_util::runLogic(pRunCall callback, void*data)
 	mtx_thread_pool_main.lock();
 	cv.notify_all();
 	threadWrapper* th;
-	if (_thList.size() > 0)
+	if (_thNoRunSize > 0)
 	{
-		if (th = front(false))
+		if (th = getNotRunTh())
 		{
-			run1th(th);
+			run1th();
 			th->setRunFun(callback, data);
 		}
 	}
@@ -136,92 +145,58 @@ threadPool_util* threadPool_util::getInstance()
 	return _instance;
 }
 
-void threadPool_util::run1th(threadWrapper* th)
+void threadPool_util::run1th()
 {
-	_thRunList.push_back(th);
-	remove(false, th);
+	--_thNoRunSize;
 }
 
-void threadPool_util::stop1th(threadWrapper* th)
+void threadPool_util::stop1th()
 {
-	remove(true, th);
-	_thList.push_back(th);
+	++_thNoRunSize;
 	cv.notify_all();
 }
 
-void threadPool_util::pop_back(bool isRunList)
+void threadPool_util::pop_back()
 {
 	lock(__LINE__);
-	if (isRunList)
-		_thRunList.pop_back();
-	else
-		_thList.pop_back();
+	_thList.pop_back();
 	unlock(__LINE__);
 }
 
-void threadPool_util::pop_front(bool isRunList)
+void threadPool_util::remove(threadWrapper* th)
 {
-	mtx_thread_pool_list.lock();
 	lock(__LINE__);
-	if (isRunList)
-		_thRunList.pop_front();
-	else
-		_thList.pop_front();
+	_thList.remove(th);
 	unlock(__LINE__);
 }
 
-void threadPool_util::remove(bool isRunList, threadWrapper* th)
+threadWrapper* threadPool_util::getNotRunTh()
 {
 	lock(__LINE__);
-	if (isRunList)
-		_thRunList.remove(th);
-	else
-		_thList.remove(th);
-	unlock(__LINE__);
-}
-
-threadWrapper* threadPool_util::front(bool isRunList)
-{
-	lock(__LINE__);
-	if (isRunList)
+	if (_thNoRunSize > 0)
 	{
-		if (_thRunList.size() > 0)
+		for (auto & th : _thList)
 		{
-			unlock(__LINE__);
-			return _thRunList.front();
-		}
-	}
-	else
-	{
-		if (_thList.size() > 0)
-		{
-			unlock(__LINE__);
-			return _thList.front();
+			if (!th->isRun())
+			{
+				unlock(__LINE__);
+				return th;
+			}
 		}
 	}
 	unlock(__LINE__);
 	return NULL;
 }
 
-threadWrapper* threadPool_util::back(bool isRunList)
+threadWrapper* threadPool_util::back()
 {
 	lock(__LINE__);
-	if (isRunList)
+	if (_thList.size() > 0)
 	{
-		if (_thRunList.size() > 0)
-		{
-			unlock(__LINE__);
-			return _thRunList.back();
-		}
+		unlock(__LINE__);
+		return _thList.back();
 	}
-	else
-	{
-		if (_thList.size() > 0)
-		{
-			unlock(__LINE__);
-			return _thList.back();
-		}
-	}
+	unlock(__LINE__);
 	return NULL;
 }
 
@@ -248,15 +223,14 @@ void threadPool_util::whileRun()
 	while (true)
 	{
 		mtx_thread_pool_while.lock();
-		if (_instance!= NULL && _thList.size() > 0 && _logicList.size() > 0)
+		if (_instance!= NULL && _thNoRunSize > 0 && _logicList.size() > 0)
 		{
 			int num = _logicList.size();
-			//printf("logic size = %d\n", num);
 			threadWrapper* th = NULL;
-			if(th = front(false))
+			if(th = getNotRunTh())
 			{
 				fun_w_t funWT = _logicList.front();
-				run1th(th);
+				run1th();
 				th->setRunFun(funWT.callback, funWT.data);
 				_logicList.pop_front();
 			}
